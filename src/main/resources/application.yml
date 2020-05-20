@@ -2,6 +2,9 @@ spring:
   datasource:
     initialization-mode: embedded
     schema: classpath:db/schema-h2.sql
+  jackson:
+    serialization:
+      write-dates-as-timestamps: true
 mybatis-plus:
   global-config:
     db-config:

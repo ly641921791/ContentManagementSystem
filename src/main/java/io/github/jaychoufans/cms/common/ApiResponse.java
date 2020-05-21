@@ -1,5 +1,6 @@
 package io.github.jaychoufans.cms.common;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.github.jaychoufans.cms.utils.WebUtils;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -21,12 +22,20 @@ public class ApiResponse<T> {
 
 	private String path;
 
+	private long total = 1;
+
 	private T data;
 
 	public static ApiResponse<?> ok(Object data) {
 		return new ApiResponse<>().setTimestamp(System.currentTimeMillis()).setStatus(HttpStatus.OK.value())
 				.setError("00000").setMessage(HttpStatus.OK.getReasonPhrase()).setPath(WebUtils.getRequestURI())
 				.setData(data);
+	}
+
+	public static ApiResponse<?> ok(Page<?> page) {
+		return new ApiResponse<>().setTimestamp(System.currentTimeMillis()).setStatus(HttpStatus.OK.value())
+				.setError("00000").setMessage(HttpStatus.OK.getReasonPhrase()).setPath(WebUtils.getRequestURI())
+				.setTotal(page.getTotal()).setData(page.getRecords());
 	}
 
 	public static ApiResponse<?> error(String error, String message) {

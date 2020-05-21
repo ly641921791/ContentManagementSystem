@@ -33,17 +33,11 @@ public class UserApiController {
 		return ApiResponse.ok(user);
 	}
 
-	@GetMapping
-	public ApiResponse<?> list(@RequestParam(name = "page", required = false, defaultValue = "1") Integer page,
-			@RequestParam(value = "rows", required = false, defaultValue = "10") Integer rows) {
-
-		Page<User> pageBean = new Page<>(page, rows);
+	@GetMapping("/list")
+	public ApiResponse<?> list(long page, long limit) {
+		Page<User> pageBean = new Page<>(page, limit);
 		userService.page(pageBean);
-
-		Map<String, Object> data = new HashMap<>();
-		data.put("total", pageBean.getTotal());
-		data.put("rows", pageBean.getRecords());
-		return ApiResponse.ok(data);
+		return ApiResponse.ok(pageBean);
 	}
 
 }

@@ -13,4 +13,9 @@ public class UserController {
 		return "user/login";
 	}
 
+	@GetMapping("/list")
+	public String list() {
+		return "user/list";
+	}
+
 }

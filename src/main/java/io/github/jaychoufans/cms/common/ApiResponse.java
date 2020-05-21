@@ -5,13 +5,13 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 import org.springframework.http.HttpStatus;
 
-import java.util.Date;
+import java.util.Collections;
 
 @Data
 @Accessors(chain = true)
 public class ApiResponse<T> {
 
-	private Date timestamp;
+	private long timestamp;
 
 	private int status;
 
@@ -24,9 +24,14 @@ public class ApiResponse<T> {
 	private T data;
 
 	public static ApiResponse<?> ok(Object data) {
-		return new ApiResponse<>().setTimestamp(new Date()).setStatus(HttpStatus.OK.value())
-				.setError(HttpStatus.OK.getReasonPhrase()).setMessage(HttpStatus.OK.getReasonPhrase())
-				.setPath(WebUtils.getRequestURI()).setData(data);
+		return new ApiResponse<>().setTimestamp(System.currentTimeMillis()).setStatus(HttpStatus.OK.value())
+				.setError("00000").setMessage(HttpStatus.OK.getReasonPhrase()).setPath(WebUtils.getRequestURI())
+				.setData(data);
+	}
+
+	public static ApiResponse<?> error(String error, String message) {
+		return new ApiResponse<>().setTimestamp(System.currentTimeMillis()).setStatus(HttpStatus.OK.value())
+				.setError(error).setMessage(message).setPath(WebUtils.getRequestURI()).setData(Collections.EMPTY_MAP);
 	}
 
 }

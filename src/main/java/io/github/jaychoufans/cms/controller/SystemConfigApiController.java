@@ -3,24 +3,22 @@ package io.github.jaychoufans.cms.controller;
 import io.github.jaychoufans.cms.common.ApiResponse;
 import io.github.jaychoufans.cms.model.SystemConfig;
 import io.github.jaychoufans.cms.service.SystemConfigService;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@Controller
+@RestController
 @RequestMapping("/api/v1/system/config")
 public class SystemConfigApiController {
 
 	@Resource
 	private SystemConfigService systemConfigService;
 
-	@ResponseBody
 	@GetMapping("/map")
 	public ApiResponse<?> map() {
 		List<SystemConfig> list = systemConfigService.list();

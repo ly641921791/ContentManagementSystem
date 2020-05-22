@@ -103,15 +103,9 @@
                     async: false,
                     data: obj.field,
                     success: function (res) {
-                        if ("00000" !== res.error) {
-                            layer.open({
-                                title: res.error,
-                                content: res.message,
-                                anim: 6
-                            });
-                            return;
+                        if (ajaxSuccessCheck(res)) {
+                            location.href = "/";
                         }
-                        location.href = "/";
                     },
                     error: ajaxError
                 });

@@ -3,13 +3,15 @@ package io.github.jaychoufans.cms.controller;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.github.jaychoufans.cms.common.ApiResponse;
 import io.github.jaychoufans.cms.model.User;
+import io.github.jaychoufans.cms.service.SystemMenuService;
 import io.github.jaychoufans.cms.service.UserService;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/user")
@@ -17,6 +19,9 @@ public class UserApiController {
 
 	@Resource
 	private UserService userService;
+
+	@Resource
+	private SystemMenuService systemMenuService;
 
 	@PostMapping("/login")
 	public ApiResponse<?> login(String username, String password) {
@@ -38,6 +43,11 @@ public class UserApiController {
 		Page<User> pageBean = new Page<>(page, limit);
 		userService.page(pageBean);
 		return ApiResponse.ok(pageBean);
+	}
+
+	@GetMapping("/menu")
+	public ApiResponse<?> menu() {
+		return ApiResponse.ok(systemMenuService.list());
 	}
 
 }

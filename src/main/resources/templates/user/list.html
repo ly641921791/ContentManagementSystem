@@ -54,30 +54,34 @@
         </div>
 
         <div class="layui-card-body">
-            <div style="padding-bottom: 10px;">
-                <button class="layui-btn layuiadmin-btn-useradmin" data-type="batchdel">删除</button>
-                <button class="layui-btn layuiadmin-btn-useradmin" data-type="add">添加</button>
-            </div>
 
             <script type="text/html" id="user-list-table-toolbar">
                 <div class="layui-btn-container">
-                    <button class="layui-btn layui-btn-sm" lay-event="getCheckData">获取选中行数据</button>
-                    <button class="layui-btn layui-btn-sm" lay-event="getCheckLength">获取选中数目</button>
-                    <button class="layui-btn layui-btn-sm" lay-event="isAll">验证是否全选</button>
+                    <button class="layui-btn layui-btn-sm" lay-event="addUser">添加用户</button>
+                    <button class="layui-btn layui-btn-sm" lay-event="modUser">修改用户</button>
+                    <button class="layui-btn layui-btn-sm" lay-event="delUser">删除用户</button>
                 </div>
             </script>
 
-            <table id="user-list-table" lay-filter="LAY-user-manage"></table>
+            <table id="user-list-table" lay-filter="user-list-table"></table>
 
             <script type="text/html" id="imgTpl">
                 <img style="display: inline-block; width: 50%; height: 100%;" src={{ d.avatar }}>
             </script>
 
-            <script type="text/html" id="table-useradmin-webuser">
+            <script type="text/html" id="user-list-table-tool">
                 <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit"><i
                         class="layui-icon layui-icon-edit"></i>编辑</a>
                 <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del"><i
                         class="layui-icon layui-icon-delete"></i>删除</a>
+                <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="udf"><i
+                        class="layui-icon layui-icon-delete"></i>启用</a>
+                <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="udf"><i
+                        class="layui-icon layui-icon-delete"></i>禁用</a>
+                <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="udf"><i
+                        class="layui-icon layui-icon-delete"></i>重置密码</a>
+                <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="udf"><i
+                        class="layui-icon layui-icon-delete"></i>分配角色</a>
             </script>
 
         </div>
@@ -101,7 +105,7 @@
         })
 
         // 加载模块
-        .use(['index', 'useradmin', 'table'], function () {
+        .use(['index', 'table'], function () {
             var $ = layui.$
             var form = layui.form
             var table = layui.table;
@@ -116,10 +120,14 @@
                     [
                         {type: 'checkbox', fixed: 'left'},
                         {field: 'id', width: 80, title: 'ID', sort: true, align: 'center'},
+                        // {field: "avatar", title: "头像", width: 100, templet: "#imgTpl"},
                         {field: 'username', width: 80, title: '用户名'},
                         {field: 'trueName', width: 80, title: '真实姓名'},
-                        {field: 'enabled', width: 80, title: '启动状态'},
-                        {fixed: 'right', title: '操作', toolbar: '#table-useradmin-webuser', width: 150}
+                        {field: 'email', width: 80, title: '邮箱'},
+                        {field: 'phone', width: 80, title: '手机号'},
+                        {field: 'enabled', width: 80, title: '状态'},
+                        {field: 'role', width: 80, title: '角色'},
+                        {fixed: 'right', title: '操作', toolbar: '#user-list-table-tool', width: 150}
                     ]
                 ],
                 parseData: function (res) {
@@ -129,7 +137,8 @@
                         "count": res.count,
                         "data": res.data
                     }
-                }
+                },
+                text: "对不起，加载出现异常！"
             });
 
             // 监听搜索
@@ -143,89 +152,99 @@
             table.on('toolbar(user-list-table)', function (obj) {
                 var checkStatus = table.checkStatus(obj.config.id);
                 switch (obj.event) {
-                    case 'getCheckData':
-                        var data = checkStatus.data;
-                        layer.alert(JSON.stringify(data));
+                    case 'addUser':
+                        addUser();
                         break;
-                    case 'getCheckLength':
-                        var data = checkStatus.data;
-                        layer.msg('选中了：' + data.length + ' 个');
-                        break;
-                    case 'isAll':
-                        layer.msg(checkStatus.isAll ? '全选' : '未全选');
-                        break;
-
-                    //自定义头工具栏右侧图标 - 提示
-                    case 'LAYTABLE_TIPS':
-                        layer.alert('这是工具栏右侧自定义的一个图标按钮');
+                    case 'delUser':
+                        delUser(checkStatus.data);
                         break;
                 }
-                ;
             });
 
-            // 事件
-            var active = {
-                batchdel: function () {
-                    var checkStatus = table.checkStatus('user-list-table')
-                        , checkData = checkStatus.data; //得到选中的数据
-
-                    if (checkData.length === 0) {
-                        return layer.msg('请选择数据');
-                    }
-
-                    layer.prompt({
-                        formType: 1
-                        , title: '敏感操作，请验证口令'
-                    }, function (value, index) {
-                        layer.close(index);
-
-                        layer.confirm('确定删除吗？', function (index) {
-
-                            //执行 Ajax 后重载
-                            /*
-                            admin.req({
-                              url: 'xxx'
-                              //,……
-                            });
-                            */
-                            table.reload('user-list-table');
-                            layer.msg('已删除');
-                        });
-                    });
-                }
-                , add: function () {
+            // 右侧工具栏
+            table.on('tool(user-list-table)', function (obj) {
+                e.data;
+                if ("del" === e.event) layer.prompt({formType: 1, title: "敏感操作，请验证口令"}, function (t, i) {
+                    layer.close(i), layer.confirm("真的删除行么", function (t) {
+                        e.del(), layer.close(t)
+                    })
+                }); else if ("edit" === e.event) {
+                    t(e.tr);
                     layer.open({
-                        type: 2
-                        , title: '添加用户'
-                        , content: 'userform.html'
-                        , maxmin: true
-                        , area: ['500px', '450px']
-                        , btn: ['确定', '取消']
-                        , yes: function (index, layero) {
-                            var iframeWindow = window['layui-layer-iframe' + index]
-                                , submitID = 'LAY-user-front-submit'
-                                , submit = layero.find('iframe').contents().find('#' + submitID);
-
-                            //监听提交
-                            iframeWindow.layui.form.on('submit(' + submitID + ')', function (data) {
-                                var field = data.field; //获取提交的字段
-
-                                //提交 Ajax 成功后，静态更新表格中的数据
-                                //$.ajax({});
-                                table.reload('LAY-user-front-submit'); //数据刷新
-                                layer.close(index); //关闭弹层
-                            });
-
-                            submit.trigger('click');
+                        type: 2,
+                        title: "编辑用户",
+                        content: "../../../views/user/user/userform.html",
+                        maxmin: !0,
+                        area: ["500px", "450px"],
+                        btn: ["确定", "取消"],
+                        yes: function (e, t) {
+                            var l = window["layui-layer-iframe" + e], r = "LAY-user-front-submit",
+                                n = t.find("iframe").contents().find("#" + r);
+                            l.layui.form.on("submit(" + r + ")", function (t) {
+                                t.field;
+                                i.reload("LAY-user-front-submit"), layer.close(e)
+                            }), n.trigger("click")
+                        },
+                        success: function (e, t) {
                         }
-                    });
+                    })
                 }
-            };
-
-            $('.layui-btn.layuiadmin-btn-useradmin').on('click', function () {
-                var type = $(this).data('type');
-                active[type] ? active[type].call(this) : '';
             });
+
+            function addUser() {
+                layer.open({
+                    type: 2
+                    , title: '添加用户'
+                    , content: 'userform.html'
+                    , maxmin: true
+                    , area: ['500px', '450px']
+                    , btn: ['确定', '取消']
+                    , yes: function (index, layero) {
+                        var iframeWindow = window['layui-layer-iframe' + index]
+                            , submitID = 'LAY-user-front-submit'
+                            , submit = layero.find('iframe').contents().find('#' + submitID);
+
+                        //监听提交
+                        iframeWindow.layui.form.on('submit(' + submitID + ')', function (data) {
+                            var field = data.field; //获取提交的字段
+
+                            //提交 Ajax 成功后，静态更新表格中的数据
+                            //$.ajax({});
+                            table.reload('LAY-user-front-submit'); //数据刷新
+                            layer.close(index); //关闭弹层
+                        });
+
+                        submit.trigger('click');
+                    }
+                });
+            }
+
+            function delUser(checkData) {
+                if (checkData.length === 0) {
+                    return layer.msg('请选择数据');
+                }
+
+                layer.prompt({
+                    formType: 1
+                    , title: '敏感操作，请验证口令'
+                }, function (value, index) {
+                    layer.close(index);
+
+                    layer.confirm('确定删除吗？', function (index) {
+
+                        //执行 Ajax 后重载
+                        /*
+                        admin.req({
+                          url: 'xxx'
+                          //,……
+                        });
+                        */
+                        table.reload('user-list-table');
+                        layer.msg('已删除');
+                    });
+                });
+            }
+
         });
 </script>
 </body>

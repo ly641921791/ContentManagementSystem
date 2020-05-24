@@ -16,7 +16,19 @@ var apis = {
         url: "/api/v1/user/menu",
         type: "GET"
     },
+    bookList: {
+        url: "/api/v1/book/list",
+        type: "GET"
+    },
+    documentationList: {
+        url: "/api/v1/documentation/list",
+        type: "GET"
+    },
 };
+
+var pages = {
+    bookForm: "/book/form"
+}
 
 function ajaxSuccessCheck(res) {
     if ("00000" === res.error) return true;

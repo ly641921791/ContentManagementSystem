@@ -16,6 +16,14 @@ var apis = {
         url: "/api/v1/user/menu",
         type: "GET"
     },
+    addBook: {
+        url: "/api/v1/book",
+        type: "POST",
+    },
+    delBook: {
+        url: "/api/v1/book",
+        type: "DELETE",
+    },
     bookList: {
         url: "/api/v1/book/list",
         type: "GET"

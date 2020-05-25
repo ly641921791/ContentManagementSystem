@@ -4,11 +4,10 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.github.jaychoufans.cms.common.ApiResponse;
 import io.github.jaychoufans.cms.model.BookInfo;
 import io.github.jaychoufans.cms.service.BookInfoService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/book")
@@ -16,6 +15,28 @@ public class BookInfoApiController {
 
 	@Resource
 	private BookInfoService bookInfoService;
+
+	@PostMapping
+	public ApiResponse<?> add(BookInfo bookInfo) {
+		bookInfoService.save(bookInfo);
+		return ApiResponse.ok();
+	}
+
+	@DeleteMapping
+	public ApiResponse<?> del(@RequestBody List<Long> ids) {
+		ids.forEach(id -> bookInfoService.removeById(id));
+		return ApiResponse.ok();
+	}
+
+	@PutMapping
+	public ApiResponse<?> mod(BookInfo bookInfo) {
+		return ApiResponse.ok();
+	}
+
+	@GetMapping
+	public ApiResponse<?> get() {
+		return ApiResponse.ok();
+	}
 
 	@GetMapping("/list")
 	public ApiResponse<?> list(long page, long limit) {

@@ -69,21 +69,6 @@
                 <img style="display: inline-block; width: 50%; height: 100%;" src={{ d.avatar }}>
             </script>
 
-            <script type="text/html" id="book-list-table-tool">
-                <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit"><i
-                        class="layui-icon layui-icon-edit"></i>编辑</a>
-                <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del"><i
-                        class="layui-icon layui-icon-delete"></i>删除</a>
-                <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="udf"><i
-                        class="layui-icon layui-icon-delete"></i>启用</a>
-                <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="udf"><i
-                        class="layui-icon layui-icon-delete"></i>禁用</a>
-                <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="udf"><i
-                        class="layui-icon layui-icon-delete"></i>重置密码</a>
-                <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="udf"><i
-                        class="layui-icon layui-icon-delete"></i>分配角色</a>
-            </script>
-
         </div>
     </div>
 </div>
@@ -128,7 +113,6 @@
                         {field: 'total', width: 80, title: '总数'},
                         {field: 'remaining', width: 80, title: '剩余'},
                         {field: 'shelf', width: 80, title: '书架'},
-                        {fixed: 'right', title: '操作', toolbar: '#book-list-table-tool', width: 150}
                     ]
                 ],
                 parseData: function (res) {
@@ -156,39 +140,12 @@
                     case 'addBook':
                         addBook();
                         break;
+                    case 'modBook':
+                        modBook();
+                        break;
                     case 'delBook':
                         delBook(checkStatus.data);
                         break;
-                }
-            });
-
-            // 右侧工具栏
-            table.on('tool(book-list-table)', function (obj) {
-                e.data;
-                if ("del" === e.event) layer.prompt({formType: 1, title: "敏感操作，请验证口令"}, function (t, i) {
-                    layer.close(i), layer.confirm("真的删除行么", function (t) {
-                        e.del(), layer.close(t)
-                    })
-                }); else if ("edit" === e.event) {
-                    t(e.tr);
-                    layer.open({
-                        type: 2,
-                        title: "编辑用户",
-                        content: "../../../views/book/book/bookform.html",
-                        maxmin: !0,
-                        area: ["500px", "450px"],
-                        btn: ["确定", "取消"],
-                        yes: function (e, t) {
-                            var l = window["layui-layer-iframe" + e], r = "LAY-book-front-submit",
-                                n = t.find("iframe").contents().find("#" + r);
-                            l.layui.form.on("submit(" + r + ")", function (t) {
-                                t.field;
-                                i.reload("LAY-book-front-submit"), layer.close(e)
-                            }), n.trigger("click")
-                        },
-                        success: function (e, t) {
-                        }
-                    })
                 }
             });
 
@@ -206,16 +163,29 @@
                             submit = layero.find('iframe').contents().find('#' + submitId);
 
                         iframeWindow.layui.form.on('submit(' + submitId + ')', function (data) {
-                            var field = data.field; //获取提交的字段
-
-                            //提交 Ajax 成功后，静态更新表格中的数据
-                            //$.ajax({});
-                            table.reload('LAY-book-front-submit'); //数据刷新
-                            layer.close(index); //关闭弹层
+                            $.ajax({
+                                url: apis.addBook.url,
+                                type: apis.addBook.type,
+                                data: data.field,
+                                async: true,
+                                success: function (res) {
+                                    if (ajaxSuccessCheck(res)) {
+                                        table.reload("book-list-table"); //数据刷新
+                                        layer.close(index); //关闭弹层
+                                    }
+                                }
+                            });
                         });
 
                         submit.trigger('click');
                     }
+                });
+            }
+
+            function modBook() {
+                layer.open({
+                    title: '修改图书',
+                    content: '该功能暂不支持',
                 });
             }
 
@@ -224,27 +194,32 @@
                     return layer.msg('请选择数据');
                 }
 
-                layer.prompt({
-                    formType: 1
-                    , title: '敏感操作，请验证口令'
-                }, function (value, index) {
-                    layer.close(index);
+                layer.confirm(
+                    "确定删除吗？",
+                    function () {
+                        var ids = [];
 
-                    layer.confirm('确定删除吗？', function (index) {
+                        checkData.forEach(data => {
+                            ids.push(data.id);
+                        })
 
-                        //执行 Ajax 后重载
-                        /*
-                        admin.req({
-                          url: 'xxx'
-                          //,……
+                        $.ajax({
+                            url: apis.delBook.url,
+                            type: apis.delBook.type,
+                            contentType: "application/json;charset=UTF-8",
+                            data: JSON.stringify(ids),
+                            dataType: "json",
+                            async: true,
+                            success: function (res) {
+                                if (ajaxSuccessCheck(res)) {
+                                    table.reload("book-list-table");
+                                    layer.msg("删除成功");
+                                }
+                            }
                         });
-                        */
-                        table.reload('book-list-table');
-                        layer.msg('已删除');
-                    });
-                });
+                    }
+                )
             }
-
         });
 </script>
 </body>

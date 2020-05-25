@@ -26,6 +26,10 @@ public class ApiResponse<T> {
 
 	private T data;
 
+	public static ApiResponse<?> ok() {
+		return ok(Collections.EMPTY_MAP);
+	}
+
 	public static ApiResponse<?> ok(Object data) {
 		return new ApiResponse<>().setTimestamp(System.currentTimeMillis()).setStatus(HttpStatus.OK.value())
 				.setError("00000").setMessage(HttpStatus.OK.getReasonPhrase()).setPath(WebUtils.getRequestURI())

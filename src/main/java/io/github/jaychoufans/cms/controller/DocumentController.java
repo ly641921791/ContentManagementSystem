@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/documentation")
 public class DocumentController {
 
-	@GetMapping("/list")
+	@GetMapping
 	public String list() {
-		return "documentation/list";
+		return "documentation/index";
 	}
 
 }

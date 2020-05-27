@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>分类管理</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="/webjars/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="/layuiadmin/style/admin.css" media="all">
+</head>
+<body>
+
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md3">
+            <div id="cms-book-type-tree"></div>
+        </div>
+        <div class="layui-col-md9">
+            <script type="text/html" id="cms-book-type-table-toolbar">
+                <div class="layui-btn-container">
+                    <button class="layui-btn layui-btn-sm" lay-event="addBookTypeSameLevel">新增同级分类</button>
+                    <button class="layui-btn layui-btn-sm" lay-event="addBookTypeLowerLevel">新增下级分类</button>
+                    <button class="layui-btn layui-btn-sm" lay-event="modBookType">修改当前分类</button>
+                    <button class="layui-btn layui-btn-sm" lay-event="delBookType">删除当前分类</button>
+                </div>
+            </script>
+            <table id="cms-book-type-table" lay-filter="cms-book-type-table"></table>
+        </div>
+    </div>
+</div>
+
+<form class="layui-form" hidden id="cms-book-type-form" style="padding: 20px 40px 0 0;">
+    <div class="layui-form-item">
+        <label class="layui-form-label">分类名称</label>
+        <div class="layui-input-block">
+            <input type="text" name="name" lay-verify="required" placeholder="请输入" autocomplete="off"
+                   class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">分类描述</label>
+        <div class="layui-input-block">
+            <input type="text" name="node" placeholder="请输入" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+</form>
+
+<script src="/js/common.js"></script>
+<script src="/webjars/layui/layui.js"></script>
+<script>
+    layui.config({
+        dir: '/webjars/layui/', // layui.js 所在路径
+        base: '/layuiadmin/'    // 拓展模块所在目录
+    }).extend({
+        index: 'lib/index' //主入口模块
+    }).use(['tree', 'util', 'table'], function () {
+        var $ = layui.$,
+            tree = layui.tree,
+            table = layui.table,
+            layer = layui.layer,
+            util = layui.util;
+
+        renderTree();
+        renderTable();
+
+        function renderTree() {
+            $.ajax({
+                url: apis.listBookType.url,
+                type: apis.listBookType.type,
+                async: true,
+                success: function (res) {
+                    var map = new Map();
+                    res.data.forEach(bookType => {
+                        bookType.title = bookType.name;
+                        bookType.field = 'name';
+                        bookType.spread = true;
+                        bookType.children = [];
+                        map.set(bookType.id, bookType);
+                    })
+
+                    var bootTypes = [];
+                    map.forEach((bookType, id) => {
+                        if (bookType.parentId === 0) {
+                            bootTypes.push(bookType);
+                        } else {
+                            map.get(bookType.parentId).children.push(bookType);
+                        }
+                    })
+
+                    tree.render({
+                        elem: '#cms-book-type-tree',
+                        id: 'cms-book-type-tree',
+                        data: bootTypes,
+                        click: function (node) {
+                            renderTable(node.data);
+                        }
+                    });
+                }
+            })
+        }
+
+        function renderTable() {
+            var data = [];
+            if (arguments.length > 0) {
+                if (arguments[0] instanceof Array) {
+                    data = arguments[0];
+                } else {
+                    data.push(arguments[0]);
+                }
+            }
+            table.render({
+                elem: '#cms-book-type-table',
+                cellMinWidth: 80,
+                toolbar: '#cms-book-type-table-toolbar',
+                cols: [
+                    [
+                        {field: 'id', title: 'ID'},
+                        {field: 'name', title: '分类名称'},
+                        {field: 'node', title: '分类描述'},
+                        {field: 'parentId', title: '父节点名', hide: true}
+                    ]
+                ],
+                data: data,
+            });
+            table.on('toolbar(cms-book-type-table)', function (obj) {
+                eval(obj.event + "()");
+            });
+        }
+
+        function addBookTypeSameLevel() {
+            var dataList = table.cache["cms-book-type-table"];
+            if (dataList.length === 0) {
+                return layer.msg('请选择数据');
+            }
+
+            layer.open({
+                type: 1,
+                title: '新增同级分类',
+                area: '300px;',
+                id: 'addBookTypeSameLevelForm',
+                content: $("#cms-book-type-form"),
+                btn: ['保存', '取消'],
+                yes: function (index, layero) {
+                    var data = {
+                        parentId: dataList[0].parentId,
+                    };
+
+                    var dataArray = layero.find('form').serializeArray();
+                    dataArray.forEach(e => {
+                        data[e.name] = e.value;
+                    })
+
+                    $.ajax({
+                        url: apis.addBookType.url,
+                        type: apis.addBookType.type,
+                        data: data,
+                        async: false,
+                        success: function (res) {
+                            if (ajaxSuccessCheck(res)) {
+                                renderTree();
+                                layer.close(index);
+                            }
+                        }
+                    })
+                },
+                end: function () {
+                    $("#cms-book-type-form")[0].reset();
+                }
+            });
+        }
+
+        function addBookTypeLowerLevel() {
+            layer.open({
+                title: '暂不支持',
+                content: '该功能暂不支持',
+            });
+        }
+
+        function modBookType() {
+            layer.open({
+                title: '暂不支持',
+                content: '该功能暂不支持',
+            });
+        }
+
+        function delBookType() {
+            layer.open({
+                title: '暂不支持',
+                content: '该功能暂不支持',
+            });
+        }
+
+    });
+</script>
+</body>
+</html>

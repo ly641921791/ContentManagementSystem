@@ -28,6 +28,14 @@ var apis = {
         url: "/api/v1/book/list",
         type: "GET"
     },
+    addBookType: {
+        url: "/api/v1/book/type",
+        type: "POST"
+    },
+    listBookType: {
+        url: "/api/v1/book/type/list",
+        type: "GET",
+    },
     documentationList: {
         url: "/api/v1/documentation/list",
         type: "GET"

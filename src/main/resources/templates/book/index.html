@@ -18,35 +18,26 @@
         <div class="layui-form layui-card-header layuiadmin-card-header-auto">
             <div class="layui-form-item">
                 <div class="layui-inline">
-                    <label class="layui-form-label">ID</label>
+                    <label class="layui-form-label">ISBN</label>
                     <div class="layui-input-block">
-                        <input type="text" name="id" placeholder="请输入" autocomplete="off" class="layui-input">
+                        <input type="text" name="isbn" placeholder="请输入" autocomplete="off" class="layui-input">
                     </div>
                 </div>
                 <div class="layui-inline">
-                    <label class="layui-form-label">用户名</label>
+                    <label class="layui-form-label">书名</label>
                     <div class="layui-input-block">
-                        <input type="text" name="username" placeholder="请输入" autocomplete="off" class="layui-input">
+                        <input type="text" name="name" placeholder="请输入" autocomplete="off" class="layui-input">
                     </div>
                 </div>
                 <div class="layui-inline">
-                    <label class="layui-form-label">真实姓名</label>
+                    <label class="layui-form-label">作者</label>
                     <div class="layui-input-block">
-                        <input type="text" name="trueName" placeholder="请输入" autocomplete="off" class="layui-input">
+                        <input type="text" name="author" placeholder="请输入" autocomplete="off" class="layui-input">
                     </div>
                 </div>
                 <div class="layui-inline">
-                    <label class="layui-form-label">启用状态</label>
-                    <div class="layui-input-block">
-                        <select name="enabled">
-                            <option value="">不限</option>
-                            <option value="1">启动</option>
-                            <option value="0">禁用</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="layui-inline">
-                    <button class="layui-btn layuiadmin-btn-useradmin" lay-submit lay-filter="LAY-book-front-search">
+                    <button class="layui-btn layuiadmin-btn-useradmin" lay-submit
+                            lay-filter="cms-book-list-table-search">
                         <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
                     </button>
                 </div>
@@ -101,18 +92,19 @@
                 url: apis.bookList.url,
                 page: true,
                 toolbar: '#book-list-table-toolbar',
+                cellMinWidth: 80,
                 cols: [
                     [
                         {type: 'checkbox', fixed: 'left'},
-                        {field: 'id', width: 80, title: 'ID', sort: true, align: 'center'},
+                        {field: 'id', title: 'ID', sort: true, align: 'center'},
                         // {field: "avatar", title: "头像", width: 100, templet: "#imgTpl"},
-                        {field: 'name', width: 80, title: '书名'},
-                        {field: 'isbn', width: 80, title: 'ISBN'},
-                        {field: 'author', width: 80, title: '作者'},
-                        {field: 'type', width: 80, title: '类型'},
-                        {field: 'total', width: 80, title: '总数'},
-                        {field: 'remaining', width: 80, title: '剩余'},
-                        {field: 'shelf', width: 80, title: '书架'},
+                        {field: 'name', title: '书名'},
+                        {field: 'isbn', title: 'ISBN'},
+                        {field: 'author', title: '作者'},
+                        {field: 'type', title: '类型'},
+                        {field: 'total', title: '总数'},
+                        {field: 'remaining', title: '剩余'},
+                        {field: 'shelf', title: '书架'},
                     ]
                 ],
                 parseData: function (res) {
@@ -127,7 +119,7 @@
             });
 
             // 监听搜索
-            form.on('submit(LAY-book-front-search)', function (data) {
+            form.on('submit(cms-book-list-table-search)', function (data) {
                 table.reload('book-list-table', {
                     where: data.field
                 });

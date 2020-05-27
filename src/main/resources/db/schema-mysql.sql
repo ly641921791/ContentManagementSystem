@@ -70,8 +70,9 @@ VALUES (1, '系统管理', '', 'layui-icon layui-icon-set', 0),
 
 INSERT INTO `system_menu` (name, url, icon, parent_id)
 VALUES ('用户列表', '/user/list', '', 1),
-       ('图书列表', '/book/list', '', 2),
-       ('资料列表', '/docs/list', '', 3);
+       ('图书列表', '/book', '', 2),
+       ('图书类型', '/book/type', '', 2),
+       ('资料列表', '/documentation', '', 3);
 
 # CREATE TABLE `role`
 
@@ -105,6 +106,28 @@ CREATE TABLE book_info
 INSERT INTO book_info (isbn, name, author, publish, type, introduction, shelf, total, remaining)
 VALUES ('', '资治通鉴', '司马光', 0, 0, '《资治通鉴》的内容以政治、军事和民族关系为主，兼及经济、文化和历史人物评价，目的是通过对事关国家盛衰、民族兴亡的统治阶级政策的描述警示后人。', '一号书架', 1,
         1);
+
+
+CREATE TABLE book_type
+(
+    id          BIGINT UNSIGNED  NOT NULL AUTO_INCREMENT,
+    name        VARCHAR(32)      NOT NULL,
+    node        VARCHAR(32)      NOT NULL DEFAULT '',
+    parent_id   BIGINT UNSIGNED  NOT NULL DEFAULT 0,
+    version     INT UNSIGNED     NOT NULL DEFAULT 0,
+    is_deleted  TINYINT UNSIGNED NOT NULL DEFAULT 0,
+    create_id   BIGINT UNSIGNED  NOT NULL DEFAULT 0,
+    create_time TIMESTAMP        NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    update_id   BIGINT UNSIGNED  NOT NULL DEFAULT 0,
+    update_time TIMESTAMP        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (id)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4;
+
+
+INSERT INTO book_type (id, name, parent_id)
+VALUES (1, '所有分类', 0),
+       (2, '电脑相关', 1);
 
 
 CREATE TABLE documentation

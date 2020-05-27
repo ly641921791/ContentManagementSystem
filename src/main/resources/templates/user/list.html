@@ -134,7 +134,7 @@
                     return {
                         "code": res.error === "00000" ? 0 : res.error, //解析接口状态
                         "msg": res.message,
-                        "count": res.count,
+                        "count": res.total,
                         "data": res.data
                     }
                 },

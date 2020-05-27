@@ -3,8 +3,10 @@ package io.github.jaychoufans.cms.controller;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.github.jaychoufans.cms.common.ApiResponse;
 import io.github.jaychoufans.cms.model.BookInfo;
+import io.github.jaychoufans.cms.model.BookLend;
 import io.github.jaychoufans.cms.model.BookType;
 import io.github.jaychoufans.cms.service.BookInfoService;
+import io.github.jaychoufans.cms.service.BookLendService;
 import io.github.jaychoufans.cms.service.BookTypeService;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,6 +22,9 @@ public class BookInfoApiController {
 
 	@Resource
 	private BookTypeService bookTypeService;
+
+	@Resource
+	private BookLendService bookLendService;
 
 	@PostMapping
 	public ApiResponse<?> add(BookInfo bookInfo) {
@@ -59,6 +64,13 @@ public class BookInfoApiController {
 	@GetMapping("/type/list")
 	public ApiResponse<?> typeList() {
 		return ApiResponse.ok(bookTypeService.list());
+	}
+
+	@GetMapping("/lend/list")
+	public ApiResponse<?> lendList(long page, long limit) {
+		Page<BookLend> pageBean = new Page<>(page, limit);
+		bookLendService.page(pageBean);
+		return ApiResponse.ok(pageBean);
 	}
 
 }

@@ -23,4 +23,9 @@ public class BookInfoController {
 		return "/book/type";
 	}
 
+	@GetMapping("/lend")
+	public String lend() {
+		return "/book/lend";
+	}
+
 }

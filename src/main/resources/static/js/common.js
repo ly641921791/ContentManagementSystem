@@ -36,6 +36,10 @@ var apis = {
         url: "/api/v1/book/type/list",
         type: "GET",
     },
+    listBookLend: {
+        url: "/api/v1/book/lend/list",
+        type: "GET",
+    },
     documentationList: {
         url: "/api/v1/documentation/list",
         type: "GET"

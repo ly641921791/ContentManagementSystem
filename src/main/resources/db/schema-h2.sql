@@ -67,6 +67,7 @@ INSERT INTO `system_menu` (name, url, icon, parent_id)
 VALUES ('用户列表', '/user/list', '', 1),
        ('图书列表', '/book', '', 2),
        ('图书类型', '/book/type', '', 2),
+       ('借阅管理', '/book/lend', '', 2),
        ('资料列表', '/documentation', '', 3);
 
 
@@ -116,6 +117,30 @@ CREATE TABLE book_type
 INSERT INTO book_type (id, name, parent_id)
 VALUES (1, '所有分类', 0),
        (2, '电脑相关', 1);
+
+
+CREATE TABLE book_lend
+(
+    id          BIGINT    NOT NULL AUTO_INCREMENT,
+    user_id     BIGINT    NOT NULL,
+    book_id     BIGINT    NOT NULL,
+    lend_time   DATETIME  NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    return_time DATETIME           DEFAULT NULL,
+    state       TINYINT   NOT NULL DEFAULT 0,
+    version     INT       NOT NULL DEFAULT 0,
+    is_deleted  TINYINT   NOT NULL DEFAULT 0,
+    create_id   BIGINT    NOT NULL DEFAULT 0,
+    create_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    update_id   BIGINT    NOT NULL DEFAULT 0,
+    update_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (id)
+);
+
+
+INSERT INTO book_lend (user_id, book_id, lend_time, return_time, state)
+VALUES (1, 1, '2019-03-05 01:53:56', '2020-03-05 01:53:56', 0),
+       (1, 1, '2019-03-05 01:53:56', NULL, 1),
+       (1, 1, '2019-03-05 01:53:56', NULL, 2);
 
 
 CREATE TABLE documentation

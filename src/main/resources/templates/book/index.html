@@ -86,6 +86,8 @@
             var form = layui.form
             var table = layui.table;
 
+            ajaxSetup(layui);
+
             // 初始化表格
             table.render({
                 elem: '#book-list-table',
@@ -159,12 +161,9 @@
                                 url: apis.addBook.url,
                                 type: apis.addBook.type,
                                 data: data.field,
-                                async: true,
-                                success: function (res) {
-                                    if (ajaxSuccessCheck(res)) {
-                                        table.reload("book-list-table"); //数据刷新
-                                        layer.close(index); //关闭弹层
-                                    }
+                                successExecute: function (res) {
+                                    table.reload("book-list-table"); //数据刷新
+                                    layer.close(index); //关闭弹层
                                 }
                             });
                         });
@@ -201,12 +200,9 @@
                             contentType: "application/json;charset=UTF-8",
                             data: JSON.stringify(ids),
                             dataType: "json",
-                            async: true,
-                            success: function (res) {
-                                if (ajaxSuccessCheck(res)) {
-                                    table.reload("book-list-table");
-                                    layer.msg("删除成功");
-                                }
+                            successExecute: function (res) {
+                                table.reload("book-list-table");
+                                layer.msg("删除成功");
                             }
                         });
                     }

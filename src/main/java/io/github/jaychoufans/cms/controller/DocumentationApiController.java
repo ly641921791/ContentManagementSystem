@@ -5,6 +5,7 @@ import io.github.jaychoufans.cms.common.ApiResponse;
 import io.github.jaychoufans.cms.model.Documentation;
 import io.github.jaychoufans.cms.service.DocumentationService;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -16,6 +17,12 @@ public class DocumentationApiController {
 
 	@Resource
 	private DocumentationService documentationService;
+
+	@PostMapping
+	public ApiResponse<?> add(Documentation documentation) {
+		documentationService.save(documentation);
+		return ApiResponse.ok();
+	}
 
 	@GetMapping("/list")
 	public ApiResponse<?> list(long page, long limit) {

@@ -18,35 +18,14 @@
         <div class="layui-form layui-card-header layuiadmin-card-header-auto">
             <div class="layui-form-item">
                 <div class="layui-inline">
-                    <label class="layui-form-label">ID</label>
+                    <label class="layui-form-label">资料名称</label>
                     <div class="layui-input-block">
-                        <input type="text" name="id" placeholder="请输入" autocomplete="off" class="layui-input">
+                        <input type="text" name="name" placeholder="请输入" autocomplete="off" class="layui-input">
                     </div>
                 </div>
                 <div class="layui-inline">
-                    <label class="layui-form-label">用户名</label>
-                    <div class="layui-input-block">
-                        <input type="text" name="username" placeholder="请输入" autocomplete="off" class="layui-input">
-                    </div>
-                </div>
-                <div class="layui-inline">
-                    <label class="layui-form-label">真实姓名</label>
-                    <div class="layui-input-block">
-                        <input type="text" name="trueName" placeholder="请输入" autocomplete="off" class="layui-input">
-                    </div>
-                </div>
-                <div class="layui-inline">
-                    <label class="layui-form-label">启用状态</label>
-                    <div class="layui-input-block">
-                        <select name="enabled">
-                            <option value="">不限</option>
-                            <option value="1">启动</option>
-                            <option value="0">禁用</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="layui-inline">
-                    <button class="layui-btn layuiadmin-btn-useradmin" lay-submit lay-filter="LAY-book-front-search">
+                    <button class="layui-btn layuiadmin-btn-useradmin" lay-submit
+                            lay-filter="cms-documentation-table-search">
                         <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
                     </button>
                 </div>
@@ -54,39 +33,61 @@
         </div>
 
         <div class="layui-card-body">
-
-            <script type="text/html" id="documentation-list-table-toolbar">
+            <script type="text/html" id="cms-documentation-table-toolbar">
                 <div class="layui-btn-container">
-                    <button class="layui-btn layui-btn-sm" lay-event="addBook">添加用户</button>
-                    <button class="layui-btn layui-btn-sm" lay-event="modBook">修改用户</button>
-                    <button class="layui-btn layui-btn-sm" lay-event="delBook">删除用户</button>
+                    <button class="layui-btn layui-btn-sm" lay-event="addDocumentation">添加</button>
+                    <button class="layui-btn layui-btn-sm" lay-event="modDocumentation">修改</button>
+                    <button class="layui-btn layui-btn-sm" lay-event="delDocumentation">删除</button>
                 </div>
             </script>
-
-            <table id="documentation-list-table" lay-filter="documentation-list-table"></table>
-
-            <script type="text/html" id="imgTpl">
-                <img style="display: inline-block; width: 50%; height: 100%;" src={{ d.avatar }}>
-            </script>
-
-            <script type="text/html" id="documentation-list-table-tool">
-                <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit"><i
-                        class="layui-icon layui-icon-edit"></i>编辑</a>
-                <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del"><i
-                        class="layui-icon layui-icon-delete"></i>删除</a>
-                <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="udf"><i
-                        class="layui-icon layui-icon-delete"></i>启用</a>
-                <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="udf"><i
-                        class="layui-icon layui-icon-delete"></i>禁用</a>
-                <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="udf"><i
-                        class="layui-icon layui-icon-delete"></i>重置密码</a>
-                <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="udf"><i
-                        class="layui-icon layui-icon-delete"></i>分配角色</a>
-            </script>
-
+            <table id="cms-documentation-table" lay-filter="cms-documentation-table"></table>
         </div>
+
     </div>
 </div>
+
+<form class="layui-form" hidden id="cms-documentation-form" style="padding: 20px 40px 0 0;">
+    <div class="layui-form-item layui-hide">
+        <label class="layui-form-label">ID</label>
+        <div class="layui-input-block">
+            <input type="text" name="id" placeholder="请输入" autocomplete="off"
+                   class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">资料名称</label>
+        <div class="layui-input-block">
+            <input type="text" name="name" lay-verify="required" placeholder="请输入" autocomplete="off"
+                   class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">书架号</label>
+        <div class="layui-input-block">
+            <input type="text" name="shelf" lay-verify="required" placeholder="请输入" autocomplete="off"
+                   class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">总份数</label>
+        <div class="layui-input-block">
+            <input type="text" name="total" lay-verify="number" placeholder="请输入" autocomplete="off"
+                   class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">剩余份数</label>
+        <div class="layui-input-block">
+            <input type="text" name="remaining" lay-verify="number" placeholder="请输入" autocomplete="off"
+                   class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item layui-hide">
+        <button class="layui-btn" id="cms-documentation-form-submit" lay-submit
+                lay-filter="cms-documentation-form-submit">提交
+        </button>
+    </div>
+</form>
 
 <script src="/js/common.js"></script>
 <script src="/webjars/layui/layui.js"></script>
@@ -110,30 +111,31 @@
             var form = layui.form
             var table = layui.table;
 
+            ajaxSetup(layui);
+
             // 初始化表格
             table.render({
-                elem: '#documentation-list-table',
+                elem: '#cms-documentation-table',
                 url: apis.documentationList.url,
                 page: true,
-                toolbar: '#documentation-list-table-toolbar',
+                cellMinWidth: 80,
+                toolbar: '#cms-documentation-table-toolbar',
                 cols: [
                     [
                         {type: 'checkbox', fixed: 'left'},
-                        {field: 'id', width: 80, title: 'ID', sort: true, align: 'center'},
-                        // {field: "avatar", title: "头像", width: 100, templet: "#imgTpl"},
-                        {field: 'name', width: 80, title: '文档名'},
-                        {field: 'type', width: 80, title: '类型'},
-                        {field: 'total', width: 80, title: '总数'},
-                        {field: 'remaining', width: 80, title: '剩余'},
-                        {field: 'shelf', width: 80, title: '书架'},
-                        {fixed: 'right', title: '操作', toolbar: '#documentation-list-table-tool', width: 150}
+                        {field: 'id', title: 'ID', sort: true, align: 'center'},
+                        {field: 'name', title: '文档名'},
+                        {field: 'type', title: '类型'},
+                        {field: 'total', title: '总数'},
+                        {field: 'remaining', title: '剩余'},
+                        {field: 'shelf', title: '书架'},
                     ]
                 ],
                 parseData: function (res) {
                     return {
                         "code": res.error === "00000" ? 0 : res.error, //解析接口状态
                         "msg": res.message,
-                        "count": res.count,
+                        "count": res.total,
                         "data": res.data
                     }
                 },
@@ -141,109 +143,53 @@
             });
 
             // 监听搜索
-            form.on('submit(LAY-book-front-search)', function (data) {
-                table.reload('documentation-list-table', {
+            form.on('submit(cms-documentation-table-search)', function (data) {
+                table.reload('cms-documentation-table', {
                     where: data.field
                 });
             });
 
             // 头工具栏事件
-            table.on('toolbar(documentation-list-table)', function (obj) {
-                var checkStatus = table.checkStatus(obj.config.id);
-                switch (obj.event) {
-                    case 'addBook':
-                        addBook();
-                        break;
-                    case 'delBook':
-                        delBook(checkStatus.data);
-                        break;
-                }
-            });
-
-            // 右侧工具栏
-            table.on('tool(documentation-list-table)', function (obj) {
-                e.data;
-                if ("del" === e.event) layer.prompt({formType: 1, title: "敏感操作，请验证口令"}, function (t, i) {
-                    layer.close(i), layer.confirm("真的删除行么", function (t) {
-                        e.del(), layer.close(t)
-                    })
-                }); else if ("edit" === e.event) {
-                    t(e.tr);
+            table.on('toolbar(cms-documentation-table)', function (obj) {
+                var method = eventExecutor[obj.event];
+                if (method instanceof Function) {
+                    method.call();
+                } else {
                     layer.open({
-                        type: 2,
-                        title: "编辑用户",
-                        content: "../../../views/book/book/bookform.html",
-                        maxmin: !0,
-                        area: ["500px", "450px"],
-                        btn: ["确定", "取消"],
-                        yes: function (e, t) {
-                            var l = window["layui-layer-iframe" + e], r = "LAY-book-front-submit",
-                                n = t.find("iframe").contents().find("#" + r);
-                            l.layui.form.on("submit(" + r + ")", function (t) {
-                                t.field;
-                                i.reload("LAY-book-front-submit"), layer.close(e)
-                            }), n.trigger("click")
-                        },
-                        success: function (e, t) {
-                        }
-                    })
+                        title: '暂不支持',
+                        content: '该功能暂不支持，请联系开发人员',
+                    });
                 }
             });
 
-            function addBook() {
+            var eventExecutor = {};
+            eventExecutor.addDocumentation = function () {
                 layer.open({
-                    type: 2
-                    , title: '添加用户'
-                    , content: 'bookform.html'
-                    , maxmin: true
-                    , area: ['500px', '450px']
-                    , btn: ['确定', '取消']
-                    , yes: function (index, layero) {
-                        var iframeWindow = window['layui-layer-iframe' + index]
-                            , submitID = 'LAY-book-front-submit'
-                            , submit = layero.find('iframe').contents().find('#' + submitID);
-
-                        //监听提交
-                        iframeWindow.layui.form.on('submit(' + submitID + ')', function (data) {
-                            var field = data.field; //获取提交的字段
-
-                            //提交 Ajax 成功后，静态更新表格中的数据
-                            //$.ajax({});
-                            table.reload('LAY-book-front-submit'); //数据刷新
-                            layer.close(index); //关闭弹层
-                        });
-
-                        submit.trigger('click');
+                    type: 1,
+                    title: '新增资料',
+                    area: ['500px', '450px'],
+                    id: 'addBookTypeSameLevelForm',
+                    content: $("#cms-documentation-form"),
+                    btn: ['保存', '取消'],
+                    yes: function (index, layero) {
+                        layui.form.on("submit(cms-documentation-form-submit)", function (data) {
+                            $.ajax({
+                                url: apis.addDocumentation.url,
+                                type: apis.addDocumentation.type,
+                                data: data.field,
+                                successExecute: function (res) {
+                                    table.reload("cms-documentation-table"); //数据刷新
+                                    layer.close(index); //关闭弹层
+                                }
+                            });
+                        })
+                        $("#cms-documentation-form-submit").click();
+                    },
+                    end: function () {
+                        $("#cms-documentation-form")[0].reset();
                     }
                 });
             }
-
-            function delBook(checkData) {
-                if (checkData.length === 0) {
-                    return layer.msg('请选择数据');
-                }
-
-                layer.prompt({
-                    formType: 1
-                    , title: '敏感操作，请验证口令'
-                }, function (value, index) {
-                    layer.close(index);
-
-                    layer.confirm('确定删除吗？', function (index) {
-
-                        //执行 Ajax 后重载
-                        /*
-                        admin.req({
-                          url: 'xxx'
-                          //,……
-                        });
-                        */
-                        table.reload('documentation-list-table');
-                        layer.msg('已删除');
-                    });
-                });
-            }
-
         });
 </script>
 </body>

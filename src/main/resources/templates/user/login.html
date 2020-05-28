@@ -75,6 +75,8 @@
             var router = layui.router()
             var search = router.search;
 
+            ajaxSetup(layui);
+
             form.render();
 
             // 获取并存储全局配置参数，根据配置设置页面
@@ -102,14 +104,10 @@
                     type: apis.userLogin.type,
                     async: false,
                     data: obj.field,
-                    success: function (res) {
-                        if (ajaxSuccessCheck(res)) {
-                            location.href = "/";
-                        }
-                    },
-                    error: ajaxError
+                    successExecute: function (res) {
+                        location.href = "/";
+                    }
                 });
-
             });
 
         });

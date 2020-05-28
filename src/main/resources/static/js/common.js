@@ -40,6 +40,10 @@ var apis = {
         url: "/api/v1/book/lend/list",
         type: "GET",
     },
+    addDocumentation: {
+        url: "/api/v1/documentation",
+        type: "POST",
+    },
     documentationList: {
         url: "/api/v1/documentation/list",
         type: "GET"
@@ -50,23 +54,36 @@ var pages = {
     bookForm: "/book/form"
 }
 
-function ajaxSuccessCheck(res) {
-    if ("00000" === res.error) return true;
-    layer.open({
-        title: res.error,
-        content: res.message,
-        anim: 6
-    });
-    return false;
-}
 
-function ajaxError(xhr) {
-    console.log(xhr);
-    layer.open({
-        title: xhr.status,
-        content: xhr.statusText,
-        anim: 6
-    });
+function ajaxSetup(layui) {
+    var $ = layui.$;
+    var layer = layui.layer;
+
+    $.ajaxSetup({
+        async: true,
+        headers: {},
+        success: function (res) {
+            if ("00000" === res.error) {
+                this.successExecute(res);
+            } else {
+                layer.open({
+                    title: res.error,
+                    content: res.message,
+                    anim: 6
+                });
+            }
+        },
+        error: function (xhr) {
+            layer.open({
+                title: xhr.status,
+                content: xhr.statusText,
+                anim: 6
+            })
+        },
+        // 自定义方法
+        successExecute: function (res) {
+        },
+    })
 }
 
 

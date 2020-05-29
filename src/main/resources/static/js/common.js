@@ -36,6 +36,10 @@ var apis = {
         url: "/api/v1/book/type/list",
         type: "GET",
     },
+    lendBook: {
+        url: "/api/v1/book/lend",
+        type: "POST",
+    },
     listBookLend: {
         url: "/api/v1/book/lend/list",
         type: "GET",
@@ -65,6 +69,15 @@ function ajaxSetup(layui) {
         success: function (res) {
             if ("00000" === res.error) {
                 this.successExecute(res);
+            } else if ("A0230" === res.error) {
+                layer.open({
+                    title: res.error,
+                    content: res.message,
+                    anim: 6,
+                    end: function () {
+                        top.location.href = "/user/login";
+                    },
+                });
             } else {
                 layer.open({
                     title: res.error,

@@ -7,7 +7,9 @@ import io.github.jaychoufans.cms.model.BookLend;
 import io.github.jaychoufans.cms.model.BookType;
 import io.github.jaychoufans.cms.service.BookInfoService;
 import io.github.jaychoufans.cms.service.BookLendService;
+import io.github.jaychoufans.cms.service.BookService;
 import io.github.jaychoufans.cms.service.BookTypeService;
+import org.apache.shiro.authz.annotation.RequiresUser;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -16,6 +18,9 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/book")
 public class BookInfoApiController {
+
+	@Resource
+	private BookService bookService;
 
 	@Resource
 	private BookInfoService bookInfoService;
@@ -64,6 +69,13 @@ public class BookInfoApiController {
 	@GetMapping("/type/list")
 	public ApiResponse<?> typeList() {
 		return ApiResponse.ok(bookTypeService.list());
+	}
+
+	@RequiresUser
+	@PostMapping(name = "借阅图书", path = "/lend")
+	public ApiResponse<?> lendBook(Long bookId) {
+		bookService.lend(bookId);
+		return ApiResponse.ok();
 	}
 
 	@GetMapping("/lend/list")

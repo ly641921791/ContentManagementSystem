@@ -5,6 +5,7 @@ import io.github.jaychoufans.cms.common.ApiResponse;
 import io.github.jaychoufans.cms.model.User;
 import io.github.jaychoufans.cms.service.SystemMenuService;
 import io.github.jaychoufans.cms.service.UserService;
+import io.github.jaychoufans.cms.utils.WebUtils;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -35,6 +36,7 @@ public class UserApiController {
 		if (!DigestUtils.sha512Hex(password).equals(user.getPassword())) {
 			return ApiResponse.error("A0210", "用户密码错误");
 		}
+		WebUtils.setCurrentUser(user);
 		return ApiResponse.ok(user);
 	}
 

@@ -51,6 +51,7 @@
                     <button class="layui-btn layui-btn-sm" lay-event="addBook">添加</button>
                     <button class="layui-btn layui-btn-sm" lay-event="modBook">修改</button>
                     <button class="layui-btn layui-btn-sm" lay-event="delBook">删除</button>
+                    <button class="layui-btn layui-btn-sm" lay-event="lendBook">借阅</button>
                 </div>
             </script>
 
@@ -129,21 +130,19 @@
 
             // 头工具栏事件
             table.on('toolbar(book-list-table)', function (obj) {
-                var checkStatus = table.checkStatus(obj.config.id);
-                switch (obj.event) {
-                    case 'addBook':
-                        addBook();
-                        break;
-                    case 'modBook':
-                        modBook();
-                        break;
-                    case 'delBook':
-                        delBook(checkStatus.data);
-                        break;
+                var method = eventExecutor[obj.event];
+                if (method instanceof Function) {
+                    method.call(this, table.checkStatus(obj.config.id).data);
+                } else {
+                    layer.open({
+                        title: '暂不支持',
+                        content: '该功能暂不支持，请联系开发人员',
+                    });
                 }
             });
 
-            function addBook() {
+            var eventExecutor = {};
+            eventExecutor.addBook = function () {
                 layer.open({
                     type: 2,
                     title: '添加图书',
@@ -173,14 +172,7 @@
                 });
             }
 
-            function modBook() {
-                layer.open({
-                    title: '修改图书',
-                    content: '该功能暂不支持',
-                });
-            }
-
-            function delBook(checkData) {
+            eventExecutor.delBook = function (checkData) {
                 if (checkData.length === 0) {
                     return layer.msg('请选择数据');
                 }
@@ -208,6 +200,27 @@
                     }
                 )
             }
+
+            eventExecutor.lendBook = function (checkData) {
+                if (checkData.length !== 1) {
+                    return layer.msg('请选择一本图书');
+                }
+
+                layer.confirm("是否借阅该图书", () => {
+                    $.ajax({
+                        url: apis.lendBook.url,
+                        type: apis.lendBook.type,
+                        data: {
+                            bookId: checkData[0].id,
+                        },
+                        successExecute: function (res) {
+                            layer.msg("借阅成功，请联系管理员领取图书");
+                            table.reload("book-list-table");
+                        }
+                    })
+                });
+            }
+
         });
 </script>
 </body>

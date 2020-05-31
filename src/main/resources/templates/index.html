@@ -179,13 +179,13 @@
                     var menuHtml = "";
                     menus.forEach(menu => {
                         menuHtml += "<li data-name='' class='layui-nav-item'>";
-                        menuHtml += String.format("<a href='javascript:;' lay-href='{0}' lay-tips='{1}' lay-direction='2'>", menu.url, menu.name);
-                        menuHtml += String.format("<i class='{0}'></i><cite>{1}</cite>", menu.icon, menu.name);
+                        menuHtml += "<a href='javascript:;' lay-href='{0}' lay-tips='{1}' lay-direction='2'>".format(menu.url, menu.name);
+                        menuHtml += "<i class='{0}'></i><cite>{1}</cite>".format(menu.icon, menu.name);
                         menuHtml += "</a>";
                         if (menu.children.length > 0) {
                             menuHtml += "<dl class='layui-nav-child'>";
                             menu.children.forEach(childMenu => {
-                                menuHtml += String.format("<dd><a lay-href='{0}'>{1}</a></dd>", childMenu.url, childMenu.name);
+                                menuHtml += "<dd><a lay-href='{0}'>{1}</a></dd>".format(childMenu.url, childMenu.name);
                             });
                             menuHtml += "</dl>";
                         }

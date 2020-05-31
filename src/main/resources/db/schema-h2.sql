@@ -19,7 +19,7 @@ VALUES ('system_name', '内容管理系统'),
        ('system_copyright', '© 2020 东京易冷');
 
 
-CREATE TABLE `user`
+CREATE TABLE `system_user`
 (
     id          BIGINT       NOT NULL AUTO_INCREMENT,
     username    VARCHAR(32)  NOT NULL,
@@ -37,9 +37,46 @@ CREATE TABLE `user`
     PRIMARY KEY (id)
 );
 
-INSERT INTO `user` (id, username, password)
+INSERT INTO `system_user` (id, username, password)
 VALUES (1, 'admin',
         'ba3253876aed6bc22d4a6ff53d8406c6ad864195ed144ab5c87621b6c233b548baeae6956df346ec8c17f5ea10f35ee3cbc514797ed7ddd3145464e2a0bab413');
+
+
+CREATE TABLE `system_role`
+(
+    id          BIGINT      NOT NULL AUTO_INCREMENT,
+    name        VARCHAR(32) NOT NULL,
+    version     INT         NOT NULL DEFAULT 0,
+    is_deleted  TINYINT     NOT NULL DEFAULT 0,
+    create_id   BIGINT      NOT NULL DEFAULT 0,
+    create_time TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    update_id   BIGINT      NOT NULL DEFAULT 0,
+    update_time TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (id)
+);
+
+
+INSERT INTO `system_role` (id, name)
+VALUES (1, '超级管理员');
+
+
+CREATE TABLE `system_user_role`
+(
+    id          BIGINT    NOT NULL AUTO_INCREMENT,
+    user_id     BIGINT    NOT NULL,
+    role_id     BIGINT    NOT NULL,
+    version     INT       NOT NULL DEFAULT 0,
+    is_deleted  TINYINT   NOT NULL DEFAULT 0,
+    create_id   BIGINT    NOT NULL DEFAULT 0,
+    create_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    update_id   BIGINT    NOT NULL DEFAULT 0,
+    update_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (id)
+);
+
+
+INSERT INTO `system_user_role` (user_id, role_id)
+VALUES (1, 1);
 
 
 CREATE TABLE `system_menu`
@@ -65,6 +102,7 @@ VALUES (1, '系统管理', '', 'layui-icon layui-icon-set', 0),
 
 INSERT INTO `system_menu` (name, url, icon, parent_id)
 VALUES ('用户列表', '/user/list', '', 1),
+       ('角色列表', '/system/role', '', 1),
        ('图书列表', '/book', '', 2),
        ('图书类型', '/book/type', '', 2),
        ('借阅管理', '/book/lend', '', 2),

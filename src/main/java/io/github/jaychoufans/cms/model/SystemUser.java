@@ -1,5 +1,6 @@
 package io.github.jaychoufans.cms.model;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.Version;
 import lombok.Data;
@@ -7,9 +8,9 @@ import lombok.Data;
 import java.util.Date;
 
 @Data
-public class User {
+public class SystemUser {
 
-	@TableId
+	@TableId(type = IdType.AUTO)
 	private Long id;
 
 	private String username;

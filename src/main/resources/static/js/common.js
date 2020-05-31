@@ -5,15 +5,19 @@ var apis = {
         type: "GET",
     },
     userLogin: {
-        url: "/api/v1/user/login",
+        url: "/api/v1/system/user/login",
         type: "POST"
     },
     userList: {
-        url: "/api/v1/user/list",
+        url: "/api/v1/system/user/list",
         type: "GET"
     },
     userMenu: {
-        url: "/api/v1/user/menu",
+        url: "/api/v1/system/user/menu",
+        type: "GET"
+    },
+    listRole: {
+        url: "/api/v1/system/role/list",
         type: "GET"
     },
     addBook: {
@@ -99,14 +103,24 @@ function ajaxSetup(layui) {
     })
 }
 
-
-String.format = function () {
-    if (arguments.length < 1) return "";
-    if (arguments.length === 1) return arguments[0];
-    var s = arguments[0];
-    for (var i = 0; i < arguments.length - 1; i++) {
-        var reg = new RegExp("\\{" + i + "\\}", "gm");
-        s = s.replace(reg, arguments[i + 1]);
+/**
+ * 字符串格式化方法，支持{name}占位符 和 {0}占位符
+ */
+String.prototype.format = function () {
+    if (arguments.length < 1) {
+        return this;
     }
-    return s;
+
+    var data = this, arg0 = arguments[0];
+    if (arg0 instanceof Object) {
+        for (var key in arg0) {
+            data = data.replace(new RegExp("\\{" + key + "\\}", "g"), arg0[key]);
+        }
+    } else {
+        for (var i = 0; i < arguments.length; i++) {
+            data = data.replace(new RegExp("\\{" + i + "\\}", "g"), arguments[i]);
+        }
+    }
+
+    return data;
 }

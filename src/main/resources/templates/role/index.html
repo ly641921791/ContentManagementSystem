@@ -44,13 +44,14 @@
             <table id="cms-system-role-table" lay-filter="cms-system-role-table"></table>
 
             <script type="text/html" id="cms-system-role-table-tool">
-                <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="modPermission"><i
-                        class="layui-icon layui-icon-edit"></i>分配权限</a>
+                <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="modPermission">分配权限</a>
             </script>
 
         </div>
     </div>
 </div>
+
+<div id="cms-system-permission-tree" hidden></div>
 
 <script src="/js/common.js"></script>
 <script src="/webjars/layui/layui.js"></script>
@@ -69,10 +70,15 @@
         })
 
         // 加载模块
-        .use(['index', 'table'], function () {
+        .use(['index', 'table', 'tree'], function () {
             var $ = layui.$
             var form = layui.form
             var table = layui.table;
+            var tree = layui.tree;
+
+            var tableId = "cms-system-role-table";
+            var treeId = "cms-system-permission-tree";
+            var treeSelect = "#" + treeId;
 
             ajaxSetup(layui);
 
@@ -83,12 +89,13 @@
                 page: true,
                 toolbar: '#cms-system-role-table-toolbar',
                 cellMinWidth: 80,
+                defaultToolbar: [],
                 cols: [
                     [
                         {type: 'checkbox', fixed: 'left'},
-                        {field: 'id', title: 'ID', sort: true, align: 'center'},
-                        {field: 'name', title: '角色名'},
-                        {fixed: 'right', title: '操作', toolbar: '#cms-system-role-table-tool', width: 120}
+                        {field: 'id', title: 'ID', sort: true, align: 'center', width: 60},
+                        {field: 'name', title: '角色名', width: 110},
+                        {fixed: 'right', title: '操作', toolbar: '#cms-system-role-table-tool', width: 90}
                     ]
                 ],
                 parseData: function (res) {
@@ -121,8 +128,109 @@
                     });
                 }
             });
+            // 右侧工具栏事件
+            table.on('tool(' + tableId + ')', function (obj) {
+                var method = eventExecutor[obj.event];
+                if (method instanceof Function) {
+                    method.call(this, obj.data);
+                } else {
+                    layer.open({
+                        title: '暂不支持',
+                        content: '该功能暂不支持，请联系开发人员',
+                    });
+                }
+            });
 
             var eventExecutor = {};
+            eventExecutor.modPermission = function (data) {
+                // 查询角色权限列表
+                data.permissionIds = [];
+                $.ajax({
+                    url: apis.getRolePermission.url.format({id: data.id}),
+                    type: apis.getRolePermission.type,
+                    successExecute: function (res) {
+                        res.data.forEach(rolePermission => {
+                            data.permissionIds.push(rolePermission.permissionId);
+                        });
+                    }
+                });
+                // 初始化权限列表树
+                $.ajax({
+                    url: apis.listPermission.url,
+                    type: apis.listPermission.type,
+                    data: {limit: 1000},
+                    successExecute: function (res) {
+
+                        var permissionMap = new Map();
+                        res.data.forEach(systemPermission => {
+                            systemPermission.title = systemPermission.name;
+                            systemPermission.field = 'name';
+                            systemPermission.spread = true;
+                            systemPermission.children = [];
+                            systemPermission.checked = data.permissionIds.includes(systemPermission.id);
+                            permissionMap.set(systemPermission.id, systemPermission);
+                        });
+
+                        var permissionList = [];
+                        permissionMap.forEach((systemPermission, id) => {
+                            if (systemPermission.parentId === 0) {
+                                permissionList.push(systemPermission);
+                            } else {
+                                var parentPermission = permissionMap.get(systemPermission.parentId);
+                                parentPermission.children.push(systemPermission);
+                                /*
+                                    layui.tree 组件存在bug，父节点选中，会默认选中所有子节点
+                                    因为子节点选中，父节点默认选中，因此子节点选中的情况，将父节点遍历取消选中
+                                 */
+                                if (systemPermission.checked) {
+                                    do {
+                                        parentPermission.checked = false;
+                                        parentPermission = permissionMap.get(parentPermission.parentId);
+                                    } while (parentPermission)
+                                }
+                            }
+                        });
+
+                        tree.render({
+                            elem: treeSelect,
+                            id: treeId,
+                            data: permissionList,
+                            showCheckbox: true
+                        });
+                    },
+                });
+                // 打开角色列表树
+                layer.open({
+                    type: 1,
+                    title: '分配权限',
+                    area: ['200px', '400px'],
+                    id: 'systemPermissionTree',
+                    content: $(treeSelect),
+                    btn: ['保存', '取消'],
+                    yes: function (index, layero) {
+                        var ids = getCheckedTreeNodeId(tree.getChecked(treeId));
+                        // 若未修改，则不提交
+                        data.permissionIds.sort();
+                        if (data.permissionIds.equals(ids)) {
+                            layer.close(index);
+                            return;
+                        }
+                        $.ajax({
+                            url: apis.setRolePermission.url.format({id: data.id}),
+                            type: apis.setRolePermission.type,
+                            data: apis.setRolePermission.parseData(ids),
+                            contentType: apis.setRolePermission.contentType,
+                            dataType: apis.setRolePermission.dataType,
+                            successExecute: function (res) {
+                                table.reload(tableId);
+                                layer.close(index);
+                            }
+                        })
+                    },
+                    end: function () {
+                    }
+                });
+            }
         });
 </script>
 </body>

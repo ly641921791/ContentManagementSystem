@@ -16,8 +16,34 @@ var apis = {
         url: "/api/v1/system/user/menu",
         type: "GET"
     },
+    setUserRole: {
+        url: "/api/v1/system/user/{id}/role",
+        type: "POST",
+        contentType: "application/json;charset=UTF-8",
+        dataType: "json",
+        parseData: JSON.stringify
+    },
+    getUserRole: {
+        url: "/api/v1/system/user/{id}/role",
+        type: "GET"
+    },
+    setRolePermission: {
+        url: "/api/v1/system/role/{id}/permission",
+        type: "POST",
+        contentType: "application/json;charset=UTF-8",
+        dataType: "json",
+        parseData: JSON.stringify
+    },
+    getRolePermission: {
+        url: "/api/v1/system/role/{id}/permission",
+        type: "GET"
+    },
     listRole: {
         url: "/api/v1/system/role/list",
+        type: "GET"
+    },
+    listPermission: {
+        url: "/api/v1/system/permission/list",
         type: "GET"
     },
     addBook: {
@@ -106,6 +132,9 @@ function ajaxSetup(layui) {
 /**
  * 字符串格式化方法，支持{name}占位符 和 {0}占位符
  */
+if (String.prototype.format) {
+    console.warn("String.prototype.format has been defined.");
+}
 String.prototype.format = function () {
     if (arguments.length < 1) {
         return this;
@@ -123,4 +152,52 @@ String.prototype.format = function () {
     }
 
     return data;
+}
+
+/**
+ * Array.equals
+ */
+if (Array.prototype.equals) {
+    console.warn("Overriding existing Array.prototype.equals. Possible causes: New API defines the method, there's a framework conflict or you've got double inclusions in your code.");
+}
+Array.prototype.equals = function (array) {
+    // if the other array is a falsy value, return
+    if (!array)
+        return false;
+
+    // compare lengths - can save a lot of time
+    if (this.length !== array.length)
+        return false;
+
+    for (var i = 0, l = this.length; i < l; i++) {
+        // Check if we have nested arrays
+        if (this[i] instanceof Array && array[i] instanceof Array) {
+            // recurse into the nested arrays
+            if (!this[i].equals(array[i]))
+                return false;
+        } else if (this[i] !== array[i]) {
+            // Warning - two different object instances will never be equal: {x:20} != {x:20}
+            return false;
+        }
+    }
+    return true;
+}
+// Hide method from for-in loops
+Object.defineProperty(Array.prototype, "equals", {enumerable: false});
+
+
+/**
+ * layui.tree 组件存在bug，返回的是父子节点嵌套结构
+ * 通过该方法获得全部被选中节点的id
+ */
+function getCheckedTreeNodeId(checkData) {
+    var ids = [];
+    if (checkData.length > 0) {
+        checkData.forEach(data => {
+            ids.push(data.id);
+            ids.push.apply(ids, getCheckedTreeNodeId(data.children));
+        });
+    }
+    ids.sort();
+    return ids;
 }

@@ -76,7 +76,8 @@ CREATE TABLE `system_user_role`
     create_time TIMESTAMP        NOT NULL DEFAULT CURRENT_TIMESTAMP,
     update_id   BIGINT UNSIGNED  NOT NULL DEFAULT 0,
     update_time TIMESTAMP        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    PRIMARY KEY (id)
+    PRIMARY KEY (id),
+    KEY (user_id)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4;
 
@@ -85,9 +86,10 @@ INSERT INTO `system_user_role` (user_id, role_id)
 VALUES (1, 1);
 
 
-CREATE TABLE `system_menu`
+CREATE TABLE `system_permission`
 (
     id          BIGINT UNSIGNED  NOT NULL AUTO_INCREMENT,
+    type        TINYINT UNSIGNED NOT NULL COMMENT '权限类型：1 页面 2 接口',
     name        VARCHAR(32)      NOT NULL,
     url         VARCHAR(64)      NOT NULL,
     icon        VARCHAR(64)      NOT NULL,
@@ -102,21 +104,37 @@ CREATE TABLE `system_menu`
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4;
 
-INSERT INTO `system_menu` (id, name, url, icon, parent_id)
-VALUES (1, '系统管理', '', 'layui-icon layui-icon-set', 0),
-       (2, '图书管理', '', 'layui-icon layui-icon-read', 0),
-       (3, '资料管理', '', 'layui-icon layui-icon-file', 0);
+INSERT INTO `system_permission` (id, type, name, url, icon, parent_id)
+VALUES (1, 1, '系统管理', '', 'layui-icon layui-icon-set', 0),
+       (2, 1, '图书管理', '', 'layui-icon layui-icon-read', 0),
+       (3, 1, '资料管理', '', 'layui-icon layui-icon-file', 0);
 
-INSERT INTO `system_menu` (name, url, icon, parent_id)
-VALUES ('用户列表', '/user/list', '', 1),
-       ('角色列表', '/system/role', '', 1),
-       ('图书列表', '/book', '', 2),
-       ('图书类型', '/book/type', '', 2),
-       ('借阅管理', '/book/lend', '', 2),
-       ('资料列表', '/documentation', '', 3);
+INSERT INTO `system_permission` (type, name, url, icon, parent_id)
+VALUES (1, '用户列表', '/user/list', '', 1),
+       (1, '角色列表', '/system/role', '', 1),
+       (1, '图书列表', '/book', '', 2),
+       (1, '图书类型', '/book/type', '', 2),
+       (1, '借阅管理', '/book/lend', '', 2),
+       (1, '资料列表', '/documentation', '', 3);
 
+CREATE TABLE `system_role_permission`
+(
+    id            BIGINT UNSIGNED  NOT NULL AUTO_INCREMENT,
+    role_id       BIGINT UNSIGNED  NOT NULL,
+    permission_id BIGINT UNSIGNED  NOT NULL,
+    version       INT UNSIGNED     NOT NULL DEFAULT 0,
+    is_deleted    TINYINT UNSIGNED NOT NULL DEFAULT 0,
+    create_id     BIGINT UNSIGNED  NOT NULL DEFAULT 0,
+    create_time   TIMESTAMP        NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    update_id     BIGINT UNSIGNED  NOT NULL DEFAULT 0,
+    update_time   TIMESTAMP        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    KEY (role_id)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4;
 
-# CREATE TABLE role_menu
+INSERT INTO `system_role_permission` (role_id, permission_id)
+VALUES (1, 1);
 
 CREATE TABLE book_info
 (

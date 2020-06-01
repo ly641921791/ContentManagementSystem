@@ -4,20 +4,24 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.Version;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
 @Data
-@NoArgsConstructor
-public class SystemUserRole {
+public class SystemPermission {
 
 	@TableId(type = IdType.AUTO)
 	private Long id;
 
-	private Long userId;
+	private Integer type;
 
-	private Long roleId;
+	private String name;
+
+	private String url;
+
+	private String icon;
+
+	private Long parentId;
 
 	@Version
 	private Integer version;
@@ -31,10 +35,5 @@ public class SystemUserRole {
 	private Long updateId;
 
 	private Date updateTime;
-
-	public SystemUserRole(Long userId, Long roleId) {
-		this.userId = userId;
-		this.roleId = roleId;
-	}
 
 }

@@ -7,6 +7,8 @@ import lombok.experimental.Accessors;
 import org.springframework.http.HttpStatus;
 
 import java.util.Collections;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Data
 @Accessors(chain = true)
@@ -37,9 +39,13 @@ public class ApiResponse<T> {
 	}
 
 	public static ApiResponse<?> ok(Page<?> page) {
+		return ok(page, record -> record);
+	}
+
+	public static <T, R> ApiResponse<?> ok(Page<T> page, Function<T, R> mapper) {
 		return new ApiResponse<>().setTimestamp(System.currentTimeMillis()).setStatus(HttpStatus.OK.value())
 				.setError("00000").setMessage(HttpStatus.OK.getReasonPhrase()).setPath(WebUtils.getRequestURI())
-				.setTotal(page.getTotal()).setData(page.getRecords());
+				.setTotal(page.getTotal()).setData(page.getRecords().stream().map(mapper).collect(Collectors.toList()));
 	}
 
 	public static ApiResponse<?> error(String error, String message) {

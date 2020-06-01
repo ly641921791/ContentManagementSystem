@@ -52,7 +52,7 @@
     </div>
 </div>
 
-<div id="cms-system-role-tree" class="cms-system-role-tree"></div>
+<div id="cms-system-role-tree" hidden></div>
 
 <script src="/js/common.js"></script>
 <script src="/webjars/layui/layui.js"></script>
@@ -77,10 +77,15 @@
             var table = layui.table;
             var tree = layui.tree;
 
+            var tableId = "cms-system-user-table";
+            var tableSelect = "#" + tableId;
+            var treeId = "cms-system-role-tree";
+
             ajaxSetup(layui);
 
             // 初始化表格
             table.render({
+                id: tableId,
                 elem: '#cms-system-user-table',
                 url: apis.userList.url,
                 page: true,
@@ -92,12 +97,12 @@
                         {field: 'id', width: 80, title: 'ID', sort: true, align: 'center'},
                         // {field: "avatar", title: "头像", width: 100, templet: "#imgTpl"},
                         {field: 'username', width: 80, title: '用户名'},
-                        {field: 'trueName', width: 80, title: '真实姓名'},
+                        {field: 'trueName', width: 90, title: '真实姓名'},
                         {field: 'email', width: 80, title: '邮箱'},
                         {field: 'phone', width: 80, title: '手机号'},
                         {field: 'enabled', width: 80, title: '状态'},
-                        {field: 'role', width: 80, title: '角色'},
-                        {fixed: 'right', title: '操作', toolbar: '#cms-system-user-table-tool', width: 120}
+                        {field: 'role', title: '角色', width: 120},
+                        {fixed: 'right', title: '操作', toolbar: '#cms-system-user-table-tool', width: 90}
                     ]
                 ],
                 parseData: function (res) {
@@ -146,16 +151,18 @@
 
             var eventExecutor = {};
             eventExecutor.modRole = function (data) {
-
+                // 初始化角色列表树
                 $.ajax({
                     url: apis.listRole.url,
                     type: apis.listRole.type,
+                    data: {limit: 1000},
                     successExecute: function (res) {
                         res.data.forEach(systemRole => {
                             systemRole.title = systemRole.name;
                             systemRole.field = 'name';
                             systemRole.spread = true;
                             systemRole.children = [];
+                            systemRole.checked = data.roleIds.includes(systemRole.id);
                         });
                         tree.render({
                             elem: '#cms-system-role-tree',
@@ -165,7 +172,7 @@
                         });
                     },
                 });
-
+                // 打开角色列表树
                 layer.open({
                     type: 1,
                     title: '分配角色',
@@ -174,13 +181,24 @@
                     content: $("#cms-system-role-tree"),
                     btn: ['保存', '取消'],
                     yes: function (index, layero) {
-                        var ids = [];
-                        var checkData = tree.getChecked('cms-system-role-tree');
-                        checkData.forEach(data => ids.push(data.id));
-
-                        console.log(ids);
-
-                        layer.close(index);
+                        var ids = getCheckedTreeNodeId(tree.getChecked(treeId));
+                        // 若未修改，则不提交
+                        data.roleIds.sort();
+                        if (data.roleIds.equals(ids)) {
+                            layer.close(index);
+                            return;
+                        }
+                        $.ajax({
+                            url: apis.setUserRole.url.format({id: data.id}),
+                            type: apis.setUserRole.type,
+                            data: apis.setUserRole.parseData(ids),
+                            contentType: apis.setUserRole.contentType,
+                            dataType: apis.setUserRole.dataType,
+                            successExecute: function (res) {
+                                table.reload(tableId);
+                                layer.close(index);
+                            }
+                        })
                     },
                     end: function () {
                     }

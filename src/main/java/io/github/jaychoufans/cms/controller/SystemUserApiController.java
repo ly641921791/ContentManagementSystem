@@ -6,15 +6,19 @@ import io.github.jaychoufans.cms.common.ApiResponse;
 import io.github.jaychoufans.cms.model.SystemRole;
 import io.github.jaychoufans.cms.model.SystemUser;
 import io.github.jaychoufans.cms.model.SystemUserRole;
-import io.github.jaychoufans.cms.service.SystemMenuService;
+import io.github.jaychoufans.cms.model.view.SystemUserView;
+import io.github.jaychoufans.cms.service.SystemPermissionService;
 import io.github.jaychoufans.cms.service.SystemRoleService;
 import io.github.jaychoufans.cms.service.SystemUserRoleService;
 import io.github.jaychoufans.cms.service.SystemUserService;
 import io.github.jaychoufans.cms.utils.WebUtils;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.collections.CollectionUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,7 +33,7 @@ public class SystemUserApiController {
 	private SystemRoleService systemRoleService;
 
 	@Resource
-	private SystemMenuService systemMenuService;
+	private SystemPermissionService systemPermissionService;
 
 	@Resource
 	private SystemUserRoleService systemUserRoleService;
@@ -50,20 +54,50 @@ public class SystemUserApiController {
 		return ApiResponse.ok(user);
 	}
 
-	@GetMapping("/list")
+	@GetMapping(name = "获取用户列表", path = "/list")
 	public ApiResponse<?> list(long page, long limit) {
 		Page<SystemUser> pageBean = new Page<>(page, limit);
 		systemUserService.page(pageBean);
-		return ApiResponse.ok(pageBean);
+
+		return ApiResponse.ok(pageBean, systemUser -> {
+			SystemUserView view = new SystemUserView();
+			BeanUtils.copyProperties(systemUser, view);
+
+			StringBuilder role = new StringBuilder();
+			List<Long> roleIds = new ArrayList<>();
+
+			SystemUserRole entity = new SystemUserRole();
+			entity.setUserId(systemUser.getId());
+			List<SystemUserRole> userRoles = systemUserRoleService.list(new QueryWrapper<>(entity));
+			userRoles.forEach(systemUserRole -> {
+				role.append("、").append(systemRoleService.getById(systemUserRole.getRoleId()).getName());
+				roleIds.add(systemUserRole.getRoleId());
+			});
+
+			view.setRole(role.length() == 0 ? "" : role.substring(1));
+			view.setRoleIds(roleIds);
+
+			return view;
+		});
 	}
 
 	@GetMapping("/menu")
 	public ApiResponse<?> menu() {
-		return ApiResponse.ok(systemMenuService.list());
+		return ApiResponse.ok(systemPermissionService.list());
 	}
 
 	@PostMapping(name = "设置用户角色", path = "/{id}/role")
-	public ApiResponse<?> setUserRole(@PathVariable String id, @RequestBody List<Long> roleIds) {
+	public ApiResponse<?> setUserRole(@PathVariable Long id, @RequestBody List<Long> roleIds) {
+		// 删除原有角色
+		SystemUserRole entity = new SystemUserRole();
+		entity.setUserId(id);
+		systemUserRoleService.remove(new QueryWrapper<>(entity));
+		// 插入新增角色
+		if (CollectionUtils.isNotEmpty(roleIds)) {
+			List<SystemUserRole> entityList = roleIds.stream().map(roleId -> new SystemUserRole(id, roleId))
+					.collect(Collectors.toList());
+			systemUserRoleService.saveBatch(entityList);
+		}
 		return ApiResponse.ok();
 	}
 

@@ -51,14 +51,13 @@
                     <button class="layui-btn layui-btn-sm" lay-event="addBook">添加</button>
                     <button class="layui-btn layui-btn-sm" lay-event="modBook">修改</button>
                     <button class="layui-btn layui-btn-sm" lay-event="delBook">删除</button>
-                    <button class="layui-btn layui-btn-sm" lay-event="lendBook">借阅</button>
                 </div>
             </script>
 
             <table id="book-list-table" lay-filter="book-list-table"></table>
 
-            <script type="text/html" id="imgTpl">
-                <img style="display: inline-block; width: 50%; height: 100%;" src={{ d.avatar }}>
+            <script type="text/html" id="cms-book-table-tool" lay-filter="cms-book-table-tool">
+                <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="lendBook">借阅</a>
             </script>
 
         </div>
@@ -96,18 +95,20 @@
                 page: true,
                 toolbar: '#book-list-table-toolbar',
                 cellMinWidth: 80,
+                defaultToolbar: [],
                 cols: [
                     [
                         {type: 'checkbox', fixed: 'left'},
                         {field: 'id', title: 'ID', sort: true, align: 'center'},
-                        // {field: "avatar", title: "头像", width: 100, templet: "#imgTpl"},
                         {field: 'name', title: '书名'},
                         {field: 'isbn', title: 'ISBN'},
                         {field: 'author', title: '作者'},
-                        {field: 'type', title: '类型'},
+                        {field: 'type', title: '类型ID', hide: true},
+                        {field: 'typeName', title: '类型'},
                         {field: 'total', title: '总数'},
                         {field: 'remaining', title: '剩余'},
                         {field: 'shelf', title: '书架'},
+                        {fixed: 'right', title: '操作', toolbar: '#cms-book-table-tool', width: 90}
                     ]
                 ],
                 parseData: function (res) {
@@ -118,7 +119,9 @@
                         "data": res.data
                     }
                 },
-                text: "对不起，加载出现异常！"
+                text: {
+                    none: '暂无相关数据'
+                }
             });
 
             // 监听搜索
@@ -130,16 +133,25 @@
 
             // 头工具栏事件
             table.on('toolbar(book-list-table)', function (obj) {
-                var method = eventExecutor[obj.event];
+                onEvent(obj.event, table.checkStatus(obj.config.id).data);
+            });
+
+            // 右侧工具栏
+            table.on('tool(book-list-table)', function (obj) {
+                onEvent(obj.event, obj.data);
+            });
+
+            function onEvent(event, data) {
+                var method = eventExecutor[event];
                 if (method instanceof Function) {
-                    method.call(this, table.checkStatus(obj.config.id).data);
+                    method.call(this, data);
                 } else {
                     layer.open({
                         title: '暂不支持',
                         content: '该功能暂不支持，请联系开发人员',
                     });
                 }
-            });
+            }
 
             var eventExecutor = {};
             eventExecutor.addBook = function () {
@@ -147,7 +159,6 @@
                     type: 2,
                     title: '添加图书',
                     content: pages.bookForm,
-                    maxmin: true,
                     area: ['500px', '450px'],
                     btn: ['确定', '取消'],
                     yes: function (index, layero) {
@@ -202,17 +213,13 @@
                 )
             }
 
-            eventExecutor.lendBook = function (checkData) {
-                if (checkData.length !== 1) {
-                    return layer.msg('请选择一本图书');
-                }
-
+            eventExecutor.lendBook = function (data) {
                 layer.confirm("是否借阅该图书", () => {
                     $.ajax({
                         url: apis.lendBook.url,
                         type: apis.lendBook.type,
                         data: {
-                            bookId: checkData[0].id,
+                            bookId: data.id,
                         },
                         successExecute: function (res) {
                             layer.msg("借阅成功，请联系管理员领取图书");

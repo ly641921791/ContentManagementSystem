@@ -101,13 +101,18 @@ VALUES (1, 1, '系统管理', '', 'layui-icon layui-icon-set', 0),
        (2, 1, '图书管理', '', 'layui-icon layui-icon-read', 0),
        (3, 1, '资料管理', '', 'layui-icon layui-icon-file', 0);
 
-INSERT INTO `system_permission` (type, name, url, icon, parent_id)
-VALUES (1, '用户列表', '/user/list', '', 1),
-       (1, '角色列表', '/system/role', '', 1),
-       (1, '图书列表', '/book', '', 2),
-       (1, '图书类型', '/book/type', '', 2),
-       (1, '借阅管理', '/book/lend', '', 2),
-       (1, '资料列表', '/documentation', '', 3);
+INSERT INTO `system_permission` (id, type, name, url, icon, parent_id)
+VALUES (101, 1, '用户列表', '/user/list', '', 1),
+       (102, 1, '角色列表', '/system/role', '', 1),
+       (103, 1, '图书列表', '/book', '', 2),
+       (104, 1, '图书类型', '/book/type', '', 2),
+       (105, 1, '借阅管理', '/book/lend', '', 2),
+       (106, 1, '资料列表', '/documentation', '', 3);
+
+INSERT INTO `system_permission` (id, type, name, url, icon, parent_id)
+VALUES (1001, 2, '查看图书列表', '{GET /api/v1/book/list}', '', 103),
+       (1002, 2, '借阅图书', '{POST /api/v1/book/lend}', '', 103),
+       (1003, 2, '查看借阅列表', '{GET /api/v1/book/lend/list}', '', 105);
 
 CREATE TABLE `system_role_permission`
 (
@@ -124,7 +129,18 @@ CREATE TABLE `system_role_permission`
 );
 
 INSERT INTO `system_role_permission` (role_id, permission_id)
-VALUES (1, 1);
+VALUES (1, 1),
+       (1, 2),
+       (1, 3),
+       (1, 101),
+       (1, 102),
+       (1, 103),
+       (1, 104),
+       (1, 105),
+       (1, 106),
+       (1, 1001),
+       (1, 1002),
+       (1, 1003);
 
 CREATE TABLE book_info
 (
@@ -149,7 +165,7 @@ CREATE TABLE book_info
 
 
 INSERT INTO book_info (isbn, name, author, publish, type, introduction, shelf, total, remaining)
-VALUES ('', '资治通鉴', '司马光', 0, 0, '《资治通鉴》的内容以政治、军事和民族关系为主，兼及经济、文化和历史人物评价，目的是通过对事关国家盛衰、民族兴亡的统治阶级政策的描述警示后人。', '一号书架', 1,
+VALUES ('', '资治通鉴', '司马光', 0, 2, '《资治通鉴》的内容以政治、军事和民族关系为主，兼及经济、文化和历史人物评价，目的是通过对事关国家盛衰、民族兴亡的统治阶级政策的描述警示后人。', '一号书架', 1,
         1);
 
 

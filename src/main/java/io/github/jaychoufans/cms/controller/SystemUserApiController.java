@@ -14,7 +14,7 @@ import io.github.jaychoufans.cms.service.SystemUserRoleService;
 import io.github.jaychoufans.cms.service.SystemUserService;
 import io.github.jaychoufans.cms.utils.WebUtils;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 

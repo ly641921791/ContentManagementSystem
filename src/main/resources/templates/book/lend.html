@@ -75,8 +75,12 @@
                 cols: [
                     [
                         {field: 'id', title: 'ID', sort: true, align: 'center'},
-                        {field: 'userId', title: '借阅人'},
-                        {field: 'bookId', title: '借阅书籍'},
+                        {field: 'userId', title: '借阅人', hide: true},
+                        {field: 'userName', title: '借阅人'},
+                        {field: 'bookId', title: '借阅书籍', hide: true},
+                        {field: 'bookName', title: '借阅书籍'},
+                        {field: 'state', title: '状态', hide: true},
+                        {field: 'stateName', title: '状态'},
                     ]
                 ],
                 parseData: function (res) {

@@ -3,6 +3,7 @@ package io.github.jaychoufans.cms.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.github.jaychoufans.cms.mapper.SystemUserMapper;
+import io.github.jaychoufans.cms.model.SystemPermission;
 import io.github.jaychoufans.cms.model.SystemUser;
 import io.github.jaychoufans.cms.service.SystemUserService;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,11 @@ public class SystemUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemU
 			return null;
 		}
 		return list.get(0);
+	}
+
+	@Override
+	public List<SystemPermission> getPermissionById(Long id) {
+		return getBaseMapper().getPermissionById(id);
 	}
 
 }

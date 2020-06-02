@@ -8,6 +8,17 @@ var apis = {
         url: "/api/v1/system/user/login",
         type: "POST"
     },
+    addUser: {
+        url: "/api/v1/system/user",
+        type: "POST"
+    },
+    delUser: {
+        url: "/api/v1/system/user",
+        type: "DELETE",
+        contentType: "application/json;charset=UTF-8",
+        dataType: "json",
+        parseData: JSON.stringify
+    },
     userList: {
         url: "/api/v1/system/user/list",
         type: "GET"

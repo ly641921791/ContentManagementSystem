@@ -2,6 +2,7 @@ package io.github.jaychoufans.cms.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.google.common.base.Strings;
 import io.github.jaychoufans.cms.common.ApiResponse;
 import io.github.jaychoufans.cms.model.SystemRole;
 import io.github.jaychoufans.cms.model.SystemUser;
@@ -37,6 +38,24 @@ public class SystemUserApiController {
 
 	@Resource
 	private SystemUserRoleService systemUserRoleService;
+
+	@PostMapping(name = "新增用户")
+	public ApiResponse<?> add(SystemUser user) {
+		// 设置默认密码 以及 密码加密
+		if (Strings.isNullOrEmpty(user.getPassword())) {
+			user.setPassword("123456");
+		}
+		user.setPassword(DigestUtils.sha512Hex(user.getPassword()));
+
+		systemUserService.save(user);
+		return ApiResponse.ok();
+	}
+
+	@DeleteMapping(name = "删除用户")
+	public ApiResponse<?> del(@RequestBody List<Long> ids) {
+		ids.forEach(id -> systemUserService.removeById(id));
+		return ApiResponse.ok();
+	}
 
 	@PostMapping("/login")
 	public ApiResponse<?> login(String username, String password) {

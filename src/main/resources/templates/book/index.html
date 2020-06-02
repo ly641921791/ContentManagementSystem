@@ -160,6 +160,7 @@
                                 url: apis.addBook.url,
                                 type: apis.addBook.type,
                                 data: data.field,
+                                async: false,
                                 successExecute: function (res) {
                                     table.reload("book-list-table"); //数据刷新
                                     layer.close(index); //关闭弹层

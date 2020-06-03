@@ -41,8 +41,8 @@ CREATE TABLE `system_user`
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4;
 
-INSERT INTO `system_user` (id, username, password)
-VALUES (1, 'admin',
+INSERT INTO `system_user` (id, username, true_name, password)
+VALUES (1, 'admin', '超级管理员',
         'ba3253876aed6bc22d4a6ff53d8406c6ad864195ed144ab5c87621b6c233b548baeae6956df346ec8c17f5ea10f35ee3cbc514797ed7ddd3145464e2a0bab413');
 
 
@@ -120,7 +120,8 @@ VALUES (101, 1, '用户列表', '/user/list', '', 1),
 INSERT INTO `system_permission` (id, type, name, url, icon, parent_id)
 VALUES (1001, 2, '查看图书列表', '{GET /api/v1/book/list}', '', 103),
        (1002, 2, '借阅图书', '{POST /api/v1/book/lend}', '', 103),
-       (1003, 2, '查看借阅列表', '{GET /api/v1/book/lend/list}', '', 105);
+       (1003, 2, '查看借阅列表', '{GET /api/v1/book/lend/list}', '', 105),
+       (1004, 2, '借还操作', '{PUT /api/v1/book/lend}', '', 105);
 
 CREATE TABLE `system_role_permission`
 (
@@ -150,7 +151,8 @@ VALUES (1, 1),
        (1, 106),
        (1, 1001),
        (1, 1002),
-       (1, 1003);
+       (1, 1003),
+       (1, 1004);
 
 CREATE TABLE book_info
 (
@@ -176,7 +178,7 @@ CREATE TABLE book_info
 
 
 INSERT INTO book_info (isbn, name, author, publish, type, introduction, shelf, total, remaining)
-VALUES ('', '资治通鉴', '司马光', 0, 2, '《资治通鉴》的内容以政治、军事和民族关系为主，兼及经济、文化和历史人物评价，目的是通过对事关国家盛衰、民族兴亡的统治阶级政策的描述警示后人。', '一号书架', 1,
+VALUES ('', '资治通鉴', '司马光', 0, 2, '《资治通鉴》的内容以政治、军事和民族关系为主，兼及经济、文化和历史人物评价，目的是通过对事关国家盛衰、民族兴亡的统治阶级政策的描述警示后人。', '一号书架', 3,
         1);
 
 

@@ -46,4 +46,53 @@ public class BookServiceImpl implements BookService {
 		bookLendService.save(bookLend);
 	}
 
+	@Override
+	@Transactional
+	public void modLendStatus(BookLend args) {
+		BookLend bookLend = bookLendService.getById(args.getId());
+
+		if (bookLend == null) {
+			throw new CmsException("A0400", "借还记录不存在");
+		}
+
+		BookLend entity = new BookLend();
+		entity.setId(bookLend.getId());
+		entity.setVersion(bookLend.getVersion());
+
+		if (BookLend.waitCollect.equals(bookLend.getState())) {
+			if (BookLend.waitReturn.equals(args.getState()) || BookLend.alreadyReturn.equals(args.getState())) {
+				entity.setState(args.getState());
+			}
+			else {
+				throw new CmsException("A0400", "参数异常");
+			}
+		}
+		else if (BookLend.waitReturn.equals(bookLend.getState())) {
+			if (BookLend.alreadyReturn.equals(args.getState())) {
+				entity.setState(args.getState());
+			}
+			else {
+				throw new CmsException("A0400", "参数异常");
+			}
+		}
+		else {
+			throw new CmsException("A0400", "图书已经归还");
+		}
+
+		if (bookLendService.updateById(entity) && BookLend.alreadyReturn.equals(args.getState())) {
+			// 图书库存 + 1
+			BookInfo bookInfo;
+			BookInfo bookInfoNew;
+			do {
+				bookInfo = bookInfoService.getById(bookLend.getBookId());
+
+				bookInfoNew = new BookInfo();
+				bookInfoNew.setId(bookInfo.getId());
+				bookInfoNew.setRemaining(bookInfo.getRemaining() + 1);
+				bookInfoNew.setVersion(bookInfo.getVersion());
+			}
+			while (!bookInfoService.updateById(bookInfoNew));
+		}
+	}
+
 }

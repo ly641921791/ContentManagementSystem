@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>layuiAdmin 网站用户</title>
+    <title>借还管理</title>
     <meta name="renderer" content="webkit">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport"
@@ -40,6 +40,11 @@
 
         <div class="layui-card-body">
             <table id="cms-book-lend-table" lay-filter="cms-book-lend-table"></table>
+
+            <script type="text/html" id="cms-book-lend-table-tool" lay-filter="cms-book-lend-table-tool">
+                <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="distributeBook">发放图书</a>
+                <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="returnBook">归还图书</a>
+            </script>
         </div>
     </div>
 </div>
@@ -66,6 +71,12 @@
             var form = layui.form
             var table = layui.table;
 
+            var tableId = "cms-book-lend-table",
+                tableToolId = tableId + "-tool",
+                tableToolSelector = "#" + tableToolId;
+
+            ajaxSetup(layui);
+
             // 初始化表格
             table.render({
                 elem: '#cms-book-lend-table',
@@ -81,6 +92,7 @@
                         {field: 'bookName', title: '借阅书籍'},
                         {field: 'state', title: '状态', hide: true},
                         {field: 'stateName', title: '状态'},
+                        {fixed: 'right', title: '操作', toolbar: tableToolSelector, width: 180}
                     ]
                 ],
                 parseData: function (res) {
@@ -100,7 +112,57 @@
                     where: data.field
                 });
             });
-
+            // 右侧工具栏
+            table.on('tool(' + tableId + ')', function (obj) {
+                eventExecute(eventExecutor, obj.event, obj.data);
+            });
+            var eventExecutor = {};
+            eventExecutor.distributeBook = function (data) {
+                if (data.state !== 0) {
+                    layer.open({
+                        title: '提示',
+                        content: '图书已经发放',
+                    });
+                    return;
+                }
+                $.ajax({
+                    url: apis.modLendBook.url,
+                    type: apis.modLendBook.type,
+                    contentType: apis.modLendBook.contentType,
+                    dataType: apis.modLendBook.dataType,
+                    data: apis.modLendBook.parseData({
+                        id: data.id,
+                        state: 1
+                    }),
+                    async: false,
+                    successExecute: function (res) {
+                        table.reload(tableId);
+                    }
+                });
+            }
+            eventExecutor.returnBook = function (data) {
+                if (data.state === 2) {
+                    layer.open({
+                        title: '提示',
+                        content: '图书已经归还',
+                    });
+                    return;
+                }
+                $.ajax({
+                    url: apis.modLendBook.url,
+                    type: apis.modLendBook.type,
+                    contentType: apis.modLendBook.contentType,
+                    dataType: apis.modLendBook.dataType,
+                    data: apis.modLendBook.parseData({
+                        id: data.id,
+                        state: 2
+                    }),
+                    async: false,
+                    successExecute: function (res) {
+                        table.reload(tableId);
+                    }
+                });
+            }
         });
 </script>
 </body>

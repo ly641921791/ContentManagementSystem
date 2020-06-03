@@ -57,6 +57,16 @@ public class SystemUserApiController {
 		return ApiResponse.ok();
 	}
 
+	@PostMapping("/register")
+	public ApiResponse<?> register(String username, String password) {
+		SystemUser entity = new SystemUser();
+		entity.setUsername(username);
+		entity.setTrueName(username);
+		entity.setPassword(DigestUtils.sha512Hex(password));
+		systemUserService.save(entity);
+		return ApiResponse.ok();
+	}
+
 	@PostMapping("/login")
 	public ApiResponse<?> login(String username, String password) {
 		SystemUser user = systemUserService.findByUsername(username);

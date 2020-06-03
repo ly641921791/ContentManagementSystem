@@ -4,6 +4,10 @@ var apis = {
         url: "/api/v1/system/config/map",
         type: "GET",
     },
+    userRegister: {
+        url: "/api/v1/system/user/register",
+        type: "POST"
+    },
     userLogin: {
         url: "/api/v1/system/user/login",
         type: "POST"
@@ -80,6 +84,13 @@ var apis = {
     lendBook: {
         url: "/api/v1/book/lend",
         type: "POST",
+    },
+    modLendBook: {
+        url: "/api/v1/book/lend",
+        type: "PUT",
+        contentType: "application/json;charset=UTF-8",
+        dataType: "json",
+        parseData: JSON.stringify
     },
     listBookLend: {
         url: "/api/v1/book/lend/list",
@@ -211,4 +222,17 @@ function getCheckedTreeNodeId(checkData) {
     }
     ids.sort();
     return ids;
+}
+
+
+function eventExecute(eventExecutor, event, args) {
+    var method = eventExecutor[event];
+    if (method instanceof Function) {
+        method.call(this, args);
+    } else {
+        layer.open({
+            title: '暂不支持',
+            content: '该功能暂不支持，请联系开发人员',
+        });
+    }
 }

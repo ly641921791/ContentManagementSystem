@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>layuiAdmin 网站用户</title>
+    <title>图书列表</title>
     <meta name="renderer" content="webkit">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport"
@@ -133,25 +133,13 @@
 
             // 头工具栏事件
             table.on('toolbar(book-list-table)', function (obj) {
-                onEvent(obj.event, table.checkStatus(obj.config.id).data);
+                eventExecute(eventExecutor, obj.event, table.checkStatus(obj.config.id).data);
             });
 
             // 右侧工具栏
             table.on('tool(book-list-table)', function (obj) {
-                onEvent(obj.event, obj.data);
+                eventExecute(eventExecutor, obj.event, obj.data);
             });
-
-            function onEvent(event, data) {
-                var method = eventExecutor[event];
-                if (method instanceof Function) {
-                    method.call(this, data);
-                } else {
-                    layer.open({
-                        title: '暂不支持',
-                        content: '该功能暂不支持，请联系开发人员',
-                    });
-                }
-            }
 
             var eventExecutor = {};
             eventExecutor.addBook = function () {
@@ -215,6 +203,10 @@
 
             eventExecutor.lendBook = function (data) {
                 layer.confirm("是否借阅该图书", () => {
+                    if (data.remaining < 1) {
+                        layer.msg("图书库存不足，借阅失败");
+                        return;
+                    }
                     $.ajax({
                         url: apis.lendBook.url,
                         type: apis.lendBook.type,

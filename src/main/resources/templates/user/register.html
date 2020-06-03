@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>用户注册</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="/webjars/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="/layuiadmin/style/admin.css" media="all">
+    <link rel="stylesheet" href="/layuiadmin/style/login.css" media="all">
+</head>
+<body>
+
+<div class="layadmin-user-login layadmin-user-display-show" id="LAY-user-login" style="display: none;">
+    <div class="layadmin-user-login-main">
+        <div class="layadmin-user-login-box layadmin-user-login-header">
+            <h2 id="system-name"></h2>
+            <p id="system-desc"></p>
+        </div>
+        <div class="layadmin-user-login-box layadmin-user-login-body layui-form">
+            <div class="layui-form-item">
+                <label class="layadmin-user-login-icon layui-icon layui-icon-username"
+                       for="cms-system-user-form-username"></label>
+                <input id="cms-system-user-form-username" type="text" name="username" lay-verify="nickname"
+                       placeholder="用户名" class="layui-input">
+            </div>
+            <div class="layui-form-item">
+                <label class="layadmin-user-login-icon layui-icon layui-icon-password"
+                       for="LAY-user-login-password"></label>
+                <input type="password" name="password" id="LAY-user-login-password" lay-verify="pass" placeholder="密码"
+                       class="layui-input">
+            </div>
+            <div class="layui-form-item">
+                <label class="layadmin-user-login-icon layui-icon layui-icon-password"
+                       for="LAY-user-login-repass"></label>
+                <input type="password" name="repass" id="LAY-user-login-repass" lay-verify="required" placeholder="确认密码"
+                       class="layui-input">
+            </div>
+            <div class="layui-form-item">
+                <input type="checkbox" name="agreement" lay-skin="primary" title="同意用户协议" checked>
+            </div>
+            <div class="layui-form-item">
+                <button class="layui-btn layui-btn-fluid" lay-submit lay-filter="cms-system-register-form-submit">注 册
+                </button>
+            </div>
+            <div class="layui-trans layui-form-item layadmin-user-login-other">
+                <a href="/login" class="layadmin-link layui-hide-xs">用已有帐号登入</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="layui-trans layadmin-user-login-footer">
+        <p id="system-copyright"></p>
+    </div>
+
+</div>
+
+<script src="/js/common.js"></script>
+<script src="/webjars/layui/layui.js"></script>
+<script>
+    layui.config({
+        dir: '/webjars/layui/', // layui.js 所在路径
+        base: '/layuiadmin/'    // 拓展模块所在目录
+    }).extend({
+        index: 'lib/index' //主入口模块
+    }).use(['index', 'user'], function () {
+        var $ = layui.$,
+            setter = layui.setter,
+            admin = layui.admin,
+            form = layui.form,
+            router = layui.router();
+
+        ajaxSetup(layui);
+
+        $("#system-name").html(layui.data("system")["system_name"]);
+        $("#system-desc").html(layui.data("system")["system_desc"]);
+        $("#system-copyright").html(layui.data("system")["system_copyright"]);
+
+        form.render();
+
+        //提交
+        form.on('submit(cms-system-register-form-submit)', function (obj) {
+            var field = obj.field;
+
+            //确认密码
+            if (field.password !== field.repass) {
+                return layer.msg('两次密码输入不一致');
+            }
+
+            //是否同意用户协议
+            if (!field.agreement) {
+                return layer.msg('你必须同意用户协议才能注册');
+            }
+
+            $.ajax({
+                url: apis.userRegister.url,
+                type: apis.userRegister.type,
+                data: field,
+                async: false,
+                successExecute: function (res) {
+                    location.href = "/";
+                }
+            });
+        });
+    });
+</script>
+</body>
+</html>

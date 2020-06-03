@@ -13,17 +13,17 @@ public class BookLend {
 	/**
 	 * 借书未取书
 	 */
-	public static final Integer lendNotGet = 0;
+	public static final Integer waitCollect = 0;
 
 	/**
 	 * 借书已取书
 	 */
-	public static final Integer getBook = 1;
+	public static final Integer waitReturn = 1;
 
 	/**
 	 * 已归还图书
 	 */
-	public static final Integer returnBook = 2;
+	public static final Integer alreadyReturn = 2;
 
 	@TableId(type = IdType.AUTO)
 	private Long id;

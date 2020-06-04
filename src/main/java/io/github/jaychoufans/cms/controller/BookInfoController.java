@@ -10,12 +10,12 @@ public class BookInfoController {
 
 	@GetMapping
 	public String index() {
-		return "book/index";
+		return "/book/index";
 	}
 
 	@GetMapping("/form")
 	public String form() {
-		return "book/form";
+		return "/book/form";
 	}
 
 	@GetMapping("/type")

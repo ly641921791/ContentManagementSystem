@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    driver-class-name: org.h2.Driver
+    initialization-mode: embedded
+    schema: classpath:db/schema-h2.sql
+    sql-script-encoding: UTF-8
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

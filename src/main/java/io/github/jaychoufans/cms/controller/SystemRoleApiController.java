@@ -2,6 +2,7 @@ package io.github.jaychoufans.cms.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import io.github.jaychoufans.cms.annotation.RequiresPermission;
 import io.github.jaychoufans.cms.common.ApiResponse;
 import io.github.jaychoufans.cms.model.SystemRole;
 import io.github.jaychoufans.cms.model.SystemRolePermission;
@@ -24,6 +25,7 @@ public class SystemRoleApiController {
 	@Resource
 	private SystemRolePermissionService systemRolePermissionService;
 
+	@RequiresPermission
 	@GetMapping("/list")
 	public ApiResponse<?> list(@RequestParam(required = false, defaultValue = "1") long page,
 			@RequestParam(required = false, defaultValue = "10") long limit) {
@@ -32,6 +34,7 @@ public class SystemRoleApiController {
 		return ApiResponse.ok(pageBean);
 	}
 
+	@RequiresPermission
 	@PostMapping(name = "设置角色权限", path = "/{id}/permission")
 	public ApiResponse<?> setRolePermission(@PathVariable Long id, @RequestBody List<Long> permissionIds) {
 		// 删除原有权限

@@ -10,7 +10,7 @@ public class UserController {
 
 	@GetMapping("/list")
 	public String list() {
-		return "user/index";
+		return "/user/index";
 	}
 
 }

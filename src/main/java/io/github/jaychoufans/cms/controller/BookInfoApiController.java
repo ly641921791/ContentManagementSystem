@@ -33,18 +33,21 @@ public class BookInfoApiController {
 	private SystemUserService systemUserService;
 
 	@PostMapping
+	@RequiresPermission
 	public ApiResponse<?> add(BookInfo bookInfo) {
 		bookInfoService.save(bookInfo);
 		return ApiResponse.ok();
 	}
 
 	@DeleteMapping
+	@RequiresPermission
 	public ApiResponse<?> del(@RequestBody List<Long> ids) {
 		ids.forEach(id -> bookInfoService.removeById(id));
 		return ApiResponse.ok();
 	}
 
 	@PutMapping
+	@RequiresPermission
 	public ApiResponse<?> mod(BookInfo bookInfo) {
 		return ApiResponse.ok();
 	}
@@ -71,6 +74,7 @@ public class BookInfoApiController {
 		});
 	}
 
+	@RequiresPermission
 	@PostMapping("/type")
 	public ApiResponse<?> addType(BookType bookType) {
 		bookTypeService.save(bookType);

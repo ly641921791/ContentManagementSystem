@@ -3,6 +3,7 @@ package io.github.jaychoufans.cms.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.base.Strings;
+import io.github.jaychoufans.cms.annotation.RequiresPermission;
 import io.github.jaychoufans.cms.common.ApiResponse;
 import io.github.jaychoufans.cms.model.SystemRole;
 import io.github.jaychoufans.cms.model.SystemUser;
@@ -39,6 +40,7 @@ public class SystemUserApiController {
 	@Resource
 	private SystemUserRoleService systemUserRoleService;
 
+	@RequiresPermission
 	@PostMapping(name = "新增用户")
 	public ApiResponse<?> add(SystemUser user) {
 		// 设置默认密码 以及 密码加密
@@ -51,6 +53,7 @@ public class SystemUserApiController {
 		return ApiResponse.ok();
 	}
 
+	@RequiresPermission
 	@DeleteMapping(name = "删除用户")
 	public ApiResponse<?> del(@RequestBody List<Long> ids) {
 		ids.forEach(id -> systemUserService.removeById(id));
@@ -83,6 +86,7 @@ public class SystemUserApiController {
 		return ApiResponse.ok(user);
 	}
 
+	@RequiresPermission
 	@GetMapping(name = "获取用户列表", path = "/list")
 	public ApiResponse<?> list(long page, long limit) {
 		Page<SystemUser> pageBean = new Page<>(page, limit);
@@ -115,6 +119,7 @@ public class SystemUserApiController {
 		return ApiResponse.ok(systemPermissionService.list());
 	}
 
+	@RequiresPermission
 	@PostMapping(name = "设置用户角色", path = "/{id}/role")
 	public ApiResponse<?> setUserRole(@PathVariable Long id, @RequestBody List<Long> roleIds) {
 		// 删除原有角色

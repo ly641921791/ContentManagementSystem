@@ -1,15 +1,14 @@
 spring:
-  datasource:
-    initialization-mode: embedded
-    schema: classpath:db/schema-h2.sql
+  profiles:
+    include: dev
   jackson:
     serialization:
       write-dates-as-timestamps: true
+  thymeleaf:
+    prefix: classpath:/templates
 mybatis-plus:
   global-config:
     db-config:
       logic-delete-field: isDeleted
       logic-delete-value: 1
       logic-not-delete-value: 0
-  configuration:
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

@@ -1,6 +1,7 @@
 package io.github.jaychoufans.cms.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import io.github.jaychoufans.cms.annotation.RequiresPermission;
 import io.github.jaychoufans.cms.common.ApiResponse;
 import io.github.jaychoufans.cms.model.Documentation;
 import io.github.jaychoufans.cms.service.DocumentationService;
@@ -19,11 +20,13 @@ public class DocumentationApiController {
 	private DocumentationService documentationService;
 
 	@PostMapping
+	@RequiresPermission
 	public ApiResponse<?> add(Documentation documentation) {
 		documentationService.save(documentation);
 		return ApiResponse.ok();
 	}
 
+	@RequiresPermission
 	@GetMapping("/list")
 	public ApiResponse<?> list(long page, long limit) {
 		Page<Documentation> pageBean = new Page<>(page, limit);

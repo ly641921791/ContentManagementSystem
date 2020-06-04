@@ -10,7 +10,6 @@ public interface SystemUserService extends IService<SystemUser> {
 
 	SystemUser findByUsername(String username);
 
-	@Deprecated
 	List<SystemPermission> getPermissionById(Long id);
 
 }

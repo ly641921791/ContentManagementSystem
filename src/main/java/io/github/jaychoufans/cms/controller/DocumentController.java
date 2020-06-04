@@ -10,7 +10,7 @@ public class DocumentController {
 
 	@GetMapping
 	public String list() {
-		return "documentation/index";
+		return "/documentation/index";
 	}
 
 }

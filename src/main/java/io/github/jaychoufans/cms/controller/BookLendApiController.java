@@ -32,6 +32,7 @@ public class BookLendApiController {
 	@Resource
 	private SystemUserService systemUserService;
 
+	@RequiresPermission
 	@PostMapping(name = "借阅图书")
 	public ApiResponse<?> lendBook(Long bookId) {
 		bookService.lend(bookId);

@@ -34,7 +34,8 @@ CREATE TABLE `system_user`
     create_time TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     update_id   BIGINT       NOT NULL DEFAULT 0,
     update_time TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    PRIMARY KEY (id)
+    PRIMARY KEY (id),
+    UNIQUE (username)
 );
 
 INSERT INTO `system_user` (id, username, true_name, password)
@@ -110,10 +111,32 @@ VALUES (101, 1, '用户列表', '/user/list', '', 1),
        (106, 1, '资料列表', '/documentation', '', 3);
 
 INSERT INTO `system_permission` (id, type, name, url, icon, parent_id)
-VALUES (1001, 2, '查看图书列表', '{GET /api/v1/book/list}', '', 103),
-       (1002, 2, '借阅图书', '{POST /api/v1/book/lend}', '', 103),
-       (1003, 2, '查看借阅列表', '{GET /api/v1/book/lend/list}', '', 105),
-       (1004, 2, '借还操作', '{PUT /api/v1/book/lend}', '', 105);
+VALUES (10101, 2, '查看用户列表', '{GET /api/v1/system/user/list}', '', 101),
+       (10102, 2, '新增用户', '{POST /api/v1/system/user}', '', 101),
+       (10103, 2, '修改用户', '{PUT /api/v1/system/user}', '', 101),
+       (10104, 2, '删除用户', '{DELETE /api/v1/system/user}', '', 101),
+       (10105, 2, '分配角色', '{POST /api/v1/system/user/{id}/role}', '', 101),
+       (10201, 2, '查看角色列表', '{GET /api/v1/system/role/list}', '', 102),
+       (10202, 2, '新增角色', '{POST /api/v1/system/role}', '', 102),
+       (10203, 2, '修改角色', '{PUT /api/v1/system/role}', '', 102),
+       (10204, 2, '删除角色', '{DELETE /api/v1/system/role}', '', 102),
+       (10205, 2, '分配权限', '{POST /api/v1/system/role/{id}/permission}', '', 102),
+       (10301, 2, '查看图书列表', '{GET /api/v1/book/list}', '', 103),
+       (10302, 2, '新增图书', '{POST /api/v1/book}', '', 103),
+       (10303, 2, '修改图书', '{PUT /api/v1/book}', '', 103),
+       (10304, 2, '删除图书', '{DELETE /api/v1/book}', '', 103),
+       (10305, 2, '借阅图书', '{POST /api/v1/book/lend}', '', 103),
+       (10401, 2, '查看图书分类', '{GET /api/v1/book/type/list}', '', 104),
+       (10402, 2, '新增图书分类', '{POST /api/v1/book/type}', '', 104),
+       (10403, 2, '修改图书分类', '{PUT /api/v1/book/type}', '', 104),
+       (10404, 2, '删除图书列表', '{DELETE /api/v1/book/type}', '', 104),
+       (10501, 2, '查看借阅列表', '{GET /api/v1/book/lend/list}', '', 105),
+       (10502, 2, '借还操作', '{PUT /api/v1/book/lend}', '', 105),
+       (10601, 2, '查看资料列表', '{GET /api/v1/documentation/list}', '', 106),
+       (10602, 2, '新增资料', '{POST /api/v1/documentation}', '', 106),
+       (10603, 2, '修改资料', '{PUT /api/v1/documentation}', '', 106),
+       (10604, 2, '删除资料', '{DELETE /api/v1/documentation}', '', 106),
+       (10605, 2, '借阅资料', '{POST /api/v1/documentation/lend}', '', 106);
 
 CREATE TABLE `system_role_permission`
 (
@@ -139,10 +162,32 @@ VALUES (1, 1),
        (1, 104),
        (1, 105),
        (1, 106),
-       (1, 1001),
-       (1, 1002),
-       (1, 1003),
-       (1, 1004);
+       (1, 10101),
+       (1, 10102),
+       (1, 10103),
+       (1, 10104),
+       (1, 10105),
+       (1, 10201),
+       (1, 10202),
+       (1, 10203),
+       (1, 10204),
+       (1, 10205),
+       (1, 10301),
+       (1, 10302),
+       (1, 10303),
+       (1, 10304),
+       (1, 10305),
+       (1, 10401),
+       (1, 10402),
+       (1, 10403),
+       (1, 10404),
+       (1, 10501),
+       (1, 10502),
+       (1, 10601),
+       (1, 10602),
+       (1, 10603),
+       (1, 10604),
+       (1, 10605);
 
 CREATE TABLE book_info
 (

@@ -16,7 +16,8 @@ CREATE TABLE system_config
 INSERT INTO system_config (config_key, config_value)
 VALUES ('system_name', '内容管理系统'),
        ('system_desc', '内容管理系统（Content Management System）'),
-       ('system_copyright', '© 2020 东京易冷');
+       ('system_copyright', '© 2020 东京易冷'),
+       ('cms_sys_home_url', '/home');
 
 
 CREATE TABLE `system_user`

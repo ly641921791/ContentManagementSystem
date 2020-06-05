@@ -115,8 +115,9 @@
             </div>
             <div class="layui-tab" lay-unauto lay-allowClose="true" lay-filter="layadmin-layout-tabs">
                 <ul class="layui-tab-title" id="LAY_app_tabsheader">
-                    <li lay-id="home" lay-attr="home" class="layui-this"><i
-                            class="layui-icon layui-icon-home"></i></li>
+                    <li lay-id="home" lay-attr="home" class="layui-this">
+                        <i class="layui-icon layui-icon-home"></i>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -125,7 +126,7 @@
         <!-- 主体内容 -->
         <div class="layui-body" id="LAY_app_body">
             <div class="layadmin-tabsbody-item layui-show">
-                <iframe src="home" frameborder="0" class="layadmin-iframe"></iframe>
+                <iframe id="cms-sys-home" frameborder="0" class="layadmin-iframe"></iframe>
             </div>
         </div>
 
@@ -155,6 +156,8 @@
             var element = layui.element;
             $("#system-name").html(layui.data("system")["system_name"]);
             $("#cms-system-title").html(layui.data("system")["system_name"]);
+
+            document.getElementById("cms-sys-home").src = layui.data("system")["cms_sys_home_url"];
 
             $.ajax({
                 url: apis.userMenu.url,

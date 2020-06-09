@@ -10,4 +10,12 @@ import org.springframework.stereotype.Service;
 public class DocumentationServiceImpl extends ServiceImpl<DocumentationMapper, Documentation>
 		implements DocumentationService {
 
+	@Override
+	public boolean save(Documentation entity) {
+		if (entity.getIntroduction() == null) {
+			entity.setIntroduction("");
+		}
+		return super.save(entity);
+	}
+
 }

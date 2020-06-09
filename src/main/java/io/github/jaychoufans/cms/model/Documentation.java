@@ -19,7 +19,7 @@ public class Documentation {
 
 	private String author;
 
-	private Long publish;
+	private String publisher;
 
 	private Long type;
 

@@ -205,9 +205,9 @@ CREATE TABLE book_info
     isbn         VARCHAR(32)      NOT NULL DEFAULT '',
     name         VARCHAR(128)     NOT NULL,
     author       VARCHAR(64)      NOT NULL DEFAULT '',
-    publish      BIGINT UNSIGNED  NOT NULL DEFAULT 0,
+    publisher    VARCHAR(64)      NOT NULL DEFAULT 0,
     type         BIGINT UNSIGNED  NOT NULL DEFAULT 0,
-    introduction TEXT             NOT NULL DEFAULT '',
+    introduction TEXT             NOT NULL,
     shelf        VARCHAR(32)      NOT NULL DEFAULT '',
     total        INT UNSIGNED     NOT NULL DEFAULT 0,
     remaining    INT UNSIGNED     NOT NULL DEFAULT 0,
@@ -222,16 +222,16 @@ CREATE TABLE book_info
   DEFAULT CHARSET = utf8mb4;
 
 
-INSERT INTO book_info (isbn, name, author, publish, type, introduction, shelf, total, remaining)
-VALUES ('', '资治通鉴', '司马光', 0, 2, '《资治通鉴》的内容以政治、军事和民族关系为主，兼及经济、文化和历史人物评价，目的是通过对事关国家盛衰、民族兴亡的统治阶级政策的描述警示后人。', '一号书架', 3,
-        1);
+INSERT INTO book_info (isbn, name, author, publisher, type, introduction, shelf, total, remaining)
+VALUES ('', '资治通鉴', '司马光', '出版社', 2, '《资治通鉴》的内容以政治、军事和民族关系为主，兼及经济、文化和历史人物评价，目的是通过对事关国家盛衰、民族兴亡的统治阶级政策的描述警示后人。', '一号书架',
+        3, 1);
 
 
 CREATE TABLE book_type
 (
     id          BIGINT UNSIGNED  NOT NULL AUTO_INCREMENT,
     name        VARCHAR(32)      NOT NULL,
-    node        VARCHAR(32)      NOT NULL DEFAULT '',
+    note        VARCHAR(32)      NOT NULL DEFAULT '' COMMENT '描述',
     parent_id   BIGINT UNSIGNED  NOT NULL DEFAULT 0,
     version     INT UNSIGNED     NOT NULL DEFAULT 0,
     is_deleted  TINYINT UNSIGNED NOT NULL DEFAULT 0,
@@ -280,9 +280,9 @@ CREATE TABLE documentation
     isbn         VARCHAR(32)      NOT NULL DEFAULT '',
     name         VARCHAR(128)     NOT NULL,
     author       VARCHAR(64)      NOT NULL DEFAULT '',
-    publish      BIGINT UNSIGNED  NOT NULL DEFAULT 0,
+    publisher    VARCHAR(64)      NOT NULL DEFAULT 0,
     type         BIGINT UNSIGNED  NOT NULL DEFAULT 0,
-    introduction TEXT             NOT NULL DEFAULT '',
+    introduction TEXT             NOT NULL,
     shelf        VARCHAR(32)      NOT NULL DEFAULT '',
     total        INT UNSIGNED     NOT NULL DEFAULT 0,
     remaining    INT UNSIGNED     NOT NULL DEFAULT 0,
@@ -296,10 +296,9 @@ CREATE TABLE documentation
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4;
 
-INSERT INTO documentation (isbn, name, author, publish, type, introduction, shelf, total, remaining)
-VALUES ('', '史记', '司马迁', 0, 0,
+INSERT INTO documentation (isbn, name, author, publisher, type, introduction, shelf, total, remaining)
+VALUES ('', '史记', '司马迁', '出版社', 0,
         '《史记》，二十四史之一，最初称为《太史公书》或《太史公记》、《太史记》，是西汉史学家司马迁撰写的纪传体史书，是中国历史上第一部纪传体通史，记载了上至上古传说中的黄帝时代，下至汉武帝太初四年间共3000多年的历史。',
-        '一号书架', 1,
-        1);
+        '一号书架', 1, 1);
 
 

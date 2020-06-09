@@ -9,4 +9,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class BookInfoServiceImpl extends ServiceImpl<BookInfoMapper, BookInfo> implements BookInfoService {
 
+	@Override
+	public boolean save(BookInfo entity) {
+		if (entity.getIntroduction() == null) {
+			entity.setIntroduction("");
+		}
+		return super.save(entity);
+	}
+
 }

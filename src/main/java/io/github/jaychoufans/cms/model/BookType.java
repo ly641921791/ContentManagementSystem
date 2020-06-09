@@ -15,7 +15,7 @@ public class BookType {
 
 	private String name;
 
-	private String node;
+	private String note;
 
 	private Long parentId;
 

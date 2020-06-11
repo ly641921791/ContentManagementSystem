@@ -15,7 +15,6 @@ import io.github.jaychoufans.cms.service.SystemUserRoleService;
 import io.github.jaychoufans.cms.service.SystemUserService;
 import io.github.jaychoufans.cms.utils.WebUtils;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -103,8 +102,11 @@ public class SystemUserApiController {
 			entity.setUserId(systemUser.getId());
 			List<SystemUserRole> userRoles = systemUserRoleService.list(new QueryWrapper<>(entity));
 			userRoles.forEach(systemUserRole -> {
-				role.append("、").append(systemRoleService.getById(systemUserRole.getRoleId()).getName());
-				roleIds.add(systemUserRole.getRoleId());
+				SystemRole systemRole = systemRoleService.getById(systemUserRole.getRoleId());
+				if (systemRole != null) {
+					role.append("、").append(systemRole.getName());
+					roleIds.add(systemRole.getId());
+				}
 			});
 
 			view.setRole(role.length() == 0 ? "" : role.substring(1));
@@ -122,16 +124,7 @@ public class SystemUserApiController {
 	@RequiresPermission
 	@PostMapping(name = "设置用户角色", path = "/{id}/role")
 	public ApiResponse<?> setUserRole(@PathVariable Long id, @RequestBody List<Long> roleIds) {
-		// 删除原有角色
-		SystemUserRole entity = new SystemUserRole();
-		entity.setUserId(id);
-		systemUserRoleService.remove(new QueryWrapper<>(entity));
-		// 插入新增角色
-		if (CollectionUtils.isNotEmpty(roleIds)) {
-			List<SystemUserRole> entityList = roleIds.stream().map(roleId -> new SystemUserRole(id, roleId))
-					.collect(Collectors.toList());
-			systemUserRoleService.saveBatch(entityList);
-		}
+		systemUserService.setRole(id, roleIds);
 		return ApiResponse.ok();
 	}
 

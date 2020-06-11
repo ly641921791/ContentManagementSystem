@@ -17,14 +17,10 @@
         <div class="layui-form layui-card-header layuiadmin-card-header-auto">
             <div class="layui-form-item">
                 <div class="layui-inline">
-                    <label class="layui-form-label">角色名</label>
-                    <div class="layui-input-block">
-                        <input type="text" name="name" placeholder="请输入" autocomplete="off" class="layui-input">
-                    </div>
+                    <input type="text" name="name" placeholder="请输入角色名" autocomplete="off" class="layui-input">
                 </div>
                 <div class="layui-inline">
-                    <button class="layui-btn layuiadmin-btn-useradmin" lay-submit
-                            lay-filter="cms-system-role-table-search">
+                    <button class="layui-btn icon-btn" lay-submit lay-filter="cms-system-role-table-search">
                         <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
                     </button>
                 </div>
@@ -53,6 +49,43 @@
 
 <div id="cms-system-permission-tree" hidden></div>
 
+<form class="layui-form" hidden id="cms-system-role-form" lay-filter="cms-system-role-form"
+      style="padding: 20px 40px 0 0;">
+    <div class="layui-form-item layui-hide">
+        <label class="layui-form-label">ID</label>
+        <div class="layui-input-block">
+            <input type="text" name="id" placeholder="请输入" autocomplete="off"
+                   class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">角色名</label>
+        <div class="layui-input-block">
+            <input type="text" name="name" lay-verify="required" placeholder="请输入" autocomplete="off"
+                   class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">默认角色</label>
+        <div class="layui-input-block">
+            <input type="radio" name="isDefaultRole" value="true" title="是">
+            <input type="radio" name="isDefaultRole" value="false" title="否" checked>
+        </div>
+    </div>
+    <div class="layui-form-item layui-hide">
+        <label class="layui-form-label">数据版本</label>
+        <div class="layui-input-block">
+            <input type="text" name="version" placeholder="请输入" autocomplete="off"
+                   class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item layui-hide">
+        <button class="layui-btn" id="cms-system-role-form-submit" lay-submit lay-filter="cms-system-role-form-submit">
+            提交
+        </button>
+    </div>
+</form>
+
 <script src="/js/common.js"></script>
 <script src="/webjars/layui/layui.js"></script>
 <script>
@@ -80,6 +113,9 @@
             var treeId = "cms-system-permission-tree";
             var treeSelect = "#" + treeId;
 
+            let formId = "cms-system-role-form", formSelector = "#" + formId;
+            let formSubmitId = formId + "-submit", formSubmitSelector = "#" + formSubmitId;
+
             ajaxSetup(layui);
 
             // 初始化表格
@@ -95,7 +131,20 @@
                         {type: 'checkbox', fixed: 'left'},
                         {field: 'id', title: 'ID', sort: true, align: 'center', width: 60},
                         {field: 'name', title: '角色名', width: 110},
-                        {fixed: 'right', title: '操作', toolbar: '#cms-system-role-table-tool', width: 90}
+                        {
+                            field: 'isDefaultRoleShow',
+                            title: '默认角色',
+                            align: 'center',
+                            width: 90,
+                            templet: d => d.isDefaultRole ? "是" : "否"
+                        },
+                        {
+                            fixed: 'right',
+                            title: '操作',
+                            align: 'center',
+                            toolbar: '#cms-system-role-table-tool',
+                            width: 90
+                        }
                     ]
                 ],
                 parseData: function (res) {
@@ -118,27 +167,11 @@
 
             // 头工具栏事件
             table.on('toolbar(cms-system-role-table)', function (obj) {
-                var method = eventExecutor[obj.event];
-                if (method instanceof Function) {
-                    method.call(this, table.checkStatus(obj.config.id).data);
-                } else {
-                    layer.open({
-                        title: '暂不支持',
-                        content: '该功能暂不支持，请联系开发人员',
-                    });
-                }
+                eventExecute(eventExecutor, obj.event, table.checkStatus(obj.config.id).data);
             });
             // 右侧工具栏事件
             table.on('tool(' + tableId + ')', function (obj) {
-                var method = eventExecutor[obj.event];
-                if (method instanceof Function) {
-                    method.call(this, obj.data);
-                } else {
-                    layer.open({
-                        title: '暂不支持',
-                        content: '该功能暂不支持，请联系开发人员',
-                    });
-                }
+                eventExecute(eventExecutor, obj.event, obj.data);
             });
 
             var eventExecutor = {};
@@ -229,6 +262,90 @@
                     },
                     end: function () {
                     }
+                });
+            }
+            eventExecutor.addRole = function () {
+                layer.open({
+                    type: 1,
+                    title: '新增角色',
+                    area: ['500px', '450px'],
+                    content: $(formSelector),
+                    btn: ['保存', '取消'],
+                    yes: function (index) {
+                        layui.form.on("submit(" + formSubmitId + ")", function (data) {
+                            $.ajax({
+                                url: apis.addRole.url,
+                                type: apis.addRole.type,
+                                data: apis.addRole.parseData(data.field),
+                                contentType: apis.addRole.contentType,
+                                dataType: apis.addRole.dataType,
+                                async: false,
+                                successExecute: function () {
+                                    layer.close(index);
+                                }
+                            });
+                        });
+                        $(formSubmitSelector).click();
+                    },
+                    end: function () {
+                        $(formSelector)[0].reset();
+                    }
+                });
+            }
+            eventExecutor.modRole = function (dataArray) {
+                if (dataArray.length !== 1) {
+                    return layer.msg("请选择一条数据");
+                }
+                let data = {...dataArray[0]};
+                data.isDefaultRole = data.isDefaultRole.toString();
+                form.val(formId, data);
+                layer.open({
+                    type: 1,
+                    title: '修改角色',
+                    area: ['500px', '450px'],
+                    content: $(formSelector),
+                    btn: ['保存', '取消'],
+                    yes: function (index) {
+                        layui.form.on("submit(" + formSubmitId + ")", function (data) {
+                            $.ajax({
+                                url: apis.modRole.url,
+                                type: apis.modRole.type,
+                                data: apis.modRole.parseData(data.field),
+                                contentType: apis.modRole.contentType,
+                                dataType: apis.modRole.dataType,
+                                async: false,
+                                successExecute: function () {
+                                    layer.close(index);
+                                }
+                            });
+                        });
+                        $(formSubmitSelector).click();
+                    },
+                    end: function () {
+                        $(formSelector)[0].reset();
+                    }
+                });
+            }
+            eventExecutor.delRole = function (dataArray) {
+                if (dataArray.length === 0) {
+                    return layer.msg('请选择数据');
+                }
+                layer.confirm("确定删除吗？", function () {
+                    let ids = [];
+                    dataArray.forEach(row => ids.push(row.id));
+
+                    let api = apis.delRole;
+                    $.ajax({
+                        url: api.url,
+                        type: api.type,
+                        data: api.parseData(ids),
+                        dataType: api.dataType,
+                        contentType: api.contentType,
+                        successExecute: () => {
+                            layer.msg("删除成功");
+                            table.reload(tableId);
+                        }
+                    });
                 });
             }
         });

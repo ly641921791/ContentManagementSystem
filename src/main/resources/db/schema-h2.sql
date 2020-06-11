@@ -46,20 +46,22 @@ VALUES (1, 'admin', '超级管理员',
 
 CREATE TABLE `system_role`
 (
-    id          BIGINT      NOT NULL AUTO_INCREMENT,
-    name        VARCHAR(32) NOT NULL,
-    version     INT         NOT NULL DEFAULT 0,
-    is_deleted  TINYINT     NOT NULL DEFAULT 0,
-    create_id   BIGINT      NOT NULL DEFAULT 0,
-    create_time TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    update_id   BIGINT      NOT NULL DEFAULT 0,
-    update_time TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    id              BIGINT      NOT NULL AUTO_INCREMENT,
+    name            VARCHAR(32) NOT NULL,
+    is_default_role TINYINT     NOT NULL DEFAULT 0 COMMENT '是否默认角色。指在创建用户时，默认赋予用户的角色。',
+    version         INT         NOT NULL DEFAULT 0,
+    is_deleted      TINYINT     NOT NULL DEFAULT 0,
+    create_id       BIGINT      NOT NULL DEFAULT 0,
+    create_time     TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    update_id       BIGINT      NOT NULL DEFAULT 0,
+    update_time     TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (id)
 );
 
 
-INSERT INTO `system_role` (id, name)
-VALUES (1, '超级管理员');
+INSERT INTO `system_role` (id, name, is_default_role)
+VALUES (1, '超级管理员', 0),
+       (2, '普通角色', 1);
 
 
 CREATE TABLE `system_user_role`

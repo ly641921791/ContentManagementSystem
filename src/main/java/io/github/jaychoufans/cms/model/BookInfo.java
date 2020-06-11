@@ -1,8 +1,10 @@
 package io.github.jaychoufans.cms.model;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.Version;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import java.util.Date;
@@ -34,7 +36,9 @@ public class BookInfo {
 	@Version
 	private Integer version;
 
-	private Boolean isDeleted;
+	@JsonProperty("isDeleted")
+	@TableField("is_deleted")
+	private Boolean deleted;
 
 	private Long createId;
 

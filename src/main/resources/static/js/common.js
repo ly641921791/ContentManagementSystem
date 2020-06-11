@@ -53,6 +53,27 @@ var apis = {
         url: "/api/v1/system/role/{id}/permission",
         type: "GET"
     },
+    addRole: {
+        url: "/api/v1/system/role",
+        type: "POST",
+        contentType: "application/json;charset=UTF-8",
+        dataType: "json",
+        parseData: JSON.stringify
+    },
+    delRole: {
+        url: "/api/v1/system/role",
+        type: "DELETE",
+        contentType: "application/json;charset=UTF-8",
+        dataType: "json",
+        parseData: JSON.stringify
+    },
+    modRole: {
+        url: "/api/v1/system/role",
+        type: "PUT",
+        contentType: "application/json;charset=UTF-8",
+        dataType: "json",
+        parseData: JSON.stringify
+    },
     listRole: {
         url: "/api/v1/system/role/list",
         type: "GET"

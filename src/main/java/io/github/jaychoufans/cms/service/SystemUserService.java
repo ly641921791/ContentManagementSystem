@@ -12,4 +12,11 @@ public interface SystemUserService extends IService<SystemUser> {
 
 	List<SystemPermission> getPermissionById(Long id);
 
+	/**
+	 * 设置角色
+	 * @param userId 用户id
+	 * @param roleIds 角色id
+	 */
+	void setRole(Long userId, List<Long> roleIds);
+
 }

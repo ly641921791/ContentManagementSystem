@@ -8,6 +8,7 @@ import io.github.jaychoufans.cms.model.SystemRole;
 import io.github.jaychoufans.cms.model.SystemRolePermission;
 import io.github.jaychoufans.cms.service.SystemRolePermissionService;
 import io.github.jaychoufans.cms.service.SystemRoleService;
+import io.github.jaychoufans.cms.utils.WebUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,6 +25,37 @@ public class SystemRoleApiController {
 
 	@Resource
 	private SystemRolePermissionService systemRolePermissionService;
+
+	@RequiresPermission
+	@PostMapping(name = "新增角色")
+	public ApiResponse<?> add(@RequestBody SystemRole args) {
+		SystemRole entity = new SystemRole();
+		entity.setName(args.getName());
+		entity.setDefaultRole(args.getDefaultRole());
+		entity.setCreateId(WebUtils.getCurrentUser().getId());
+		systemRoleService.save(entity);
+		return ApiResponse.ok();
+	}
+
+	@RequiresPermission
+	@DeleteMapping(name = "删除角色")
+	public ApiResponse<?> del(@RequestBody List<Long> ids) {
+		ids.forEach(id -> systemRoleService.removeById(id));
+		return ApiResponse.ok();
+	}
+
+	@RequiresPermission
+	@PutMapping(name = "修改角色")
+	public ApiResponse<?> mod(@RequestBody SystemRole args) {
+		SystemRole entity = new SystemRole();
+		entity.setId(args.getId());
+		entity.setName(args.getName());
+		entity.setDefaultRole(args.getDefaultRole());
+		entity.setVersion(args.getVersion());
+		entity.setUpdateId(WebUtils.getCurrentUser().getId());
+		systemRoleService.updateById(entity);
+		return ApiResponse.ok();
+	}
 
 	@RequiresPermission
 	@GetMapping("/list")

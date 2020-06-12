@@ -39,8 +39,8 @@ CREATE TABLE `system_user`
     UNIQUE (username)
 );
 
-INSERT INTO `system_user` (id, username, true_name, password)
-VALUES (1, 'admin', '超级管理员',
+INSERT INTO `system_user` (id, username, true_name, email, phone, password)
+VALUES (1, 'admin', '超级管理员', '641921791@qq.com', '18720968614',
         'ba3253876aed6bc22d4a6ff53d8406c6ad864195ed144ab5c87621b6c233b548baeae6956df346ec8c17f5ea10f35ee3cbc514797ed7ddd3145464e2a0bab413');
 
 

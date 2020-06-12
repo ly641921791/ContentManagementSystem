@@ -59,6 +59,19 @@ public class SystemUserApiController {
 		return ApiResponse.ok();
 	}
 
+	@RequiresPermission
+	@PutMapping(name = "修改用户")
+	public ApiResponse<?> mod(@RequestBody SystemUser args) {
+		if (Strings.isNullOrEmpty(args.getPassword())) {
+			args.setPassword(null);
+		}
+		else {
+			args.setPassword(DigestUtils.sha512Hex(args.getPassword()));
+		}
+		systemUserService.updateById(args);
+		return ApiResponse.ok();
+	}
+
 	@PostMapping("/register")
 	public ApiResponse<?> register(String username, String password) {
 		SystemUser entity = new SystemUser();

@@ -18,14 +18,10 @@
         <div class="layui-form layui-card-header layuiadmin-card-header-auto">
             <div class="layui-form-item">
                 <div class="layui-inline">
-                    <label class="layui-form-label">真实姓名</label>
-                    <div class="layui-input-block">
-                        <input type="text" name="trueName" placeholder="请输入" autocomplete="off" class="layui-input">
-                    </div>
+                    <input type="text" name="trueName" placeholder="请输入真实姓名" autocomplete="off" class="layui-input">
                 </div>
                 <div class="layui-inline">
-                    <button class="layui-btn layuiadmin-btn-useradmin" lay-submit
-                            lay-filter="cms-system-user-table-search">
+                    <button class="layui-btn icon-btn" lay-submit lay-filter="cms-system-user-table-search">
                         <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
                     </button>
                 </div>
@@ -54,7 +50,8 @@
 
 <div id="cms-system-role-tree" hidden></div>
 
-<form class="layui-form" hidden id="cms-user-form" style="padding: 20px 40px 0 0;">
+<form class="layui-form" hidden id="cms-system-user-form" lay-filter="cms-system-user-form"
+      style="padding: 20px 40px 0 0;">
     <div class="layui-form-item layui-hide">
         <label class="layui-form-label">ID</label>
         <div class="layui-input-block">
@@ -94,7 +91,15 @@
         </div>
     </div>
     <div class="layui-form-item layui-hide">
-        <button class="layui-btn" id="cms-user-form-submit" lay-submit lay-filter="cms-user-form-submit">提交</button>
+        <label class="layui-form-label">数据版本</label>
+        <div class="layui-input-block">
+            <input type="text" name="version" placeholder="请输入" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item layui-hide">
+        <button class="layui-btn" id="cms-system-user-form-submit" lay-submit lay-filter="cms-system-user-form-submit">
+            提交
+        </button>
     </div>
 </form>
 
@@ -124,11 +129,9 @@
             var tableId = "cms-system-user-table";
             var tableSelect = "#" + tableId;
             var treeId = "cms-system-role-tree";
-            var formId = "cms-user-form";
-            var formSelector = "#" + formId;
-            var formDialogId = formId + "Dialog";
-            var formSubmitId = formId + "-submit";
-            var formSubmitSelector = "#" + formSubmitId;
+            let formId = "cms-system-user-form", formSelector = "#" + formId;
+            let formDialogId = formId + "-dialog";
+            let formSubmitId = formId + "-submit", formSubmitSelector = "#" + formSubmitId;
 
             ajaxSetup(layui);
 
@@ -146,10 +149,16 @@
                         {field: 'id', width: 80, title: 'ID', sort: true, align: 'center'},
                         // {field: "avatar", title: "头像", width: 100, templet: "#imgTpl"},
                         {field: 'username', width: 80, title: '用户名'},
-                        {field: 'trueName', width: 90, title: '真实姓名'},
-                        {field: 'email', width: 80, title: '邮箱'},
-                        {field: 'phone', width: 80, title: '手机号'},
-                        {field: 'enabled', width: 80, title: '状态'},
+                        {field: 'trueName', width: 100, title: '真实姓名'},
+                        {field: 'email', width: 165, title: '邮箱'},
+                        {field: 'phone', width: 120, title: '手机号'},
+                        {
+                            field: 'enabledShow',
+                            width: 80,
+                            title: '状态',
+                            align: 'center',
+                            templet: d => d.enabled ? "启用" : "禁用"
+                        },
                         {field: 'role', title: '角色', width: 120},
                         {fixed: 'right', title: '操作', toolbar: '#cms-system-user-table-tool', width: 90}
                     ]
@@ -176,25 +185,13 @@
 
             // 头工具栏事件
             table.on('toolbar(cms-system-user-table)', function (obj) {
-                onEvent(obj.event, table.checkStatus(obj.config.id).data);
+                eventExecute(eventExecutor, obj.event, table.checkStatus(obj.config.id).data);
             });
 
             // 右侧工具栏
             table.on('tool(cms-system-user-table)', function (obj) {
-                onEvent(obj.event, obj.data);
+                eventExecute(eventExecutor, obj.event, obj.data);
             });
-
-            function onEvent(event, data) {
-                var method = eventExecutor[event];
-                if (method instanceof Function) {
-                    method.call(this, data);
-                } else {
-                    layer.open({
-                        title: '暂不支持',
-                        content: '该功能暂不支持，请联系开发人员',
-                    });
-                }
-            }
 
             var eventExecutor = {};
             eventExecutor.modRole = function (data) {
@@ -268,12 +265,46 @@
                                 data: event.field,
                                 async: false,
                                 successExecute: function (res) {
-                                    table.reload(tableId);
                                     layer.close(index);
                                 }
                             });
                         });
                         // 触发表单提交
+                        $(formSubmitSelector).click();
+                    },
+                    end: function () {
+                        $(formSelector)[0].reset();
+                    }
+                });
+            }
+            eventExecutor.modUser = function (dataArray) {
+                if (dataArray.length !== 1) {
+                    return layer.msg("请选择一条数据");
+                }
+                let data = {...dataArray[0]};
+                data.enabled = data.enabled.toString();
+                console.log(data);
+                form.val(formId, data);
+                layer.open({
+                    type: 1,
+                    title: '修改用户',
+                    area: ['500px', '450px'],
+                    content: $(formSelector),
+                    btn: ['保存', '取消'],
+                    yes: function (index) {
+                        layui.form.on("submit(" + formSubmitId + ")", function (data) {
+                            let api = apis.modUser;
+                            $.ajax({
+                                url: api.url,
+                                type: api.type,
+                                data: api.parseData(data.field),
+                                dataType: api.dataType,
+                                contentType: api.contentType,
+                                successExecute: function () {
+                                    layer.close(index);
+                                }
+                            });
+                        });
                         $(formSubmitSelector).click();
                     },
                     end: function () {

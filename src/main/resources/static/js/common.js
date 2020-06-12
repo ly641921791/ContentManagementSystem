@@ -23,6 +23,13 @@ var apis = {
         dataType: "json",
         parseData: JSON.stringify
     },
+    modUser: {
+        url: "/api/v1/system/user",
+        type: "PUT",
+        contentType: "application/json;charset=UTF-8",
+        dataType: "json",
+        parseData: JSON.stringify
+    },
     userList: {
         url: "/api/v1/system/user/list",
         type: "GET"

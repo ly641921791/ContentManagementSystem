@@ -18,26 +18,16 @@
         <div class="layui-form layui-card-header layuiadmin-card-header-auto">
             <div class="layui-form-item">
                 <div class="layui-inline">
-                    <label class="layui-form-label">ISBN</label>
-                    <div class="layui-input-block">
-                        <input type="text" name="isbn" placeholder="请输入" autocomplete="off" class="layui-input">
-                    </div>
+                    <input type="text" name="isbn" placeholder="请输入ISBN" autocomplete="off" class="layui-input">
                 </div>
                 <div class="layui-inline">
-                    <label class="layui-form-label">书名</label>
-                    <div class="layui-input-block">
-                        <input type="text" name="name" placeholder="请输入" autocomplete="off" class="layui-input">
-                    </div>
+                    <input type="text" name="name" placeholder="请输入书名" autocomplete="off" class="layui-input">
                 </div>
                 <div class="layui-inline">
-                    <label class="layui-form-label">作者</label>
-                    <div class="layui-input-block">
-                        <input type="text" name="author" placeholder="请输入" autocomplete="off" class="layui-input">
-                    </div>
+                    <input type="text" name="author" placeholder="请输入作者" autocomplete="off" class="layui-input">
                 </div>
                 <div class="layui-inline">
-                    <button class="layui-btn layuiadmin-btn-useradmin" lay-submit
-                            lay-filter="cms-book-list-table-search">
+                    <button class="layui-btn icon-btn" lay-submit lay-filter="cms-book-table-search">
                         <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
                     </button>
                 </div>
@@ -46,7 +36,7 @@
 
         <div class="layui-card-body">
 
-            <script type="text/html" id="book-list-table-toolbar">
+            <script type="text/html" id="cms-book-table-toolbar">
                 <div class="layui-btn-container">
                     <button class="layui-btn layui-btn-sm" lay-event="addBook">添加</button>
                     <button class="layui-btn layui-btn-sm" lay-event="modBook">修改</button>
@@ -54,7 +44,7 @@
                 </div>
             </script>
 
-            <table id="book-list-table" lay-filter="book-list-table"></table>
+            <table id="cms-book-table" lay-filter="cms-book-table"></table>
 
             <script type="text/html" id="cms-book-table-tool" lay-filter="cms-book-table-tool">
                 <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="lendBook">借阅</a>
@@ -63,6 +53,83 @@
         </div>
     </div>
 </div>
+
+<form class="layui-form" hidden lay-filter="cms-book-form" id="cms-book-form"
+      style="padding: 20px 40px 0 0;">
+    <div class="layui-form-item" hidden>
+        <label class="layui-form-label">ID</label>
+        <div class="layui-input-block">
+            <input type="text" name="id" placeholder="请输入ID" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">书名</label>
+        <div class="layui-input-block">
+            <input type="text" name="name" lay-verify="required" placeholder="请输入书名" autocomplete="off"
+                   class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">ISBN</label>
+        <div class="layui-input-block">
+            <input type="text" name="isbn" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">出版社</label>
+        <div class="layui-input-block">
+            <input type="text" name="publisher" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">作者</label>
+        <div class="layui-input-block">
+            <input type="text" name="author" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">图书类型</label>
+        <div class="layui-input-block">
+            <input id="type" name="type" style="display: none;">
+            <input id="typeName" type="text" name="typeName" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">图书介绍</label>
+        <div class="layui-input-block">
+            <textarea name="introduction" autocomplete="off" class="layui-textarea"></textarea>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">书架</label>
+        <div class="layui-input-block">
+            <input type="text" name="shelf" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">总数</label>
+        <div class="layui-input-block">
+            <input type="text" name="total" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">剩余数量</label>
+        <div class="layui-input-block">
+            <input type="text" name="remaining" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item" hidden>
+        <label class="layui-form-label">数据版本</label>
+        <div class="layui-input-block">
+            <input type="text" name="version" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item layui-hide">
+        <input type="button" lay-submit lay-filter="cms-book-form-submit" id="cms-book-form-submit" value="确认">
+    </div>
+</form>
+
+<div id="cms-book-type-tree" hidden></div>
 
 <script src="/js/common.js"></script>
 <script src="/webjars/layui/layui.js"></script>
@@ -81,19 +148,30 @@
         })
 
         // 加载模块
-        .use(['index', 'table'], function () {
+        .use(['index', 'table', 'tree'], function () {
             var $ = layui.$
             var form = layui.form
             var table = layui.table;
+
+            let tableId = "cms-book-table", tableSelector = "#" + tableId;
+            let tableToolId = tableId + "-tool", tableToolSelector = "#" + tableToolId;
+            let tableToolbarId = tableId + "-toolbar", tableToolbarSelector = "#" + tableToolbarId;
+            let tableSearchId = tableId + "-search", tableSearchSelector = "#" + tableSearchId;
+
+            let formId = "cms-book-form", formSelector = "#" + formId;
+            let formSubmitId = formId + "-submit", formSubmitSelector = "#" + formSubmitId;
+
+            let tree = layui.tree;
+            let treeId = "cms-book-type-tree", treeSelector = "#" + treeId;
 
             ajaxSetup(layui);
 
             // 初始化表格
             table.render({
-                elem: '#book-list-table',
+                elem: tableSelector,
                 url: apis.bookList.url,
                 page: true,
-                toolbar: '#book-list-table-toolbar',
+                toolbar: tableToolbarSelector,
                 cellMinWidth: 80,
                 defaultToolbar: [],
                 cols: [
@@ -108,7 +186,7 @@
                         {field: 'total', title: '总数'},
                         {field: 'remaining', title: '剩余'},
                         {field: 'shelf', title: '书架'},
-                        {fixed: 'right', title: '操作', toolbar: '#cms-book-table-tool', width: 90}
+                        {fixed: 'right', title: '操作', toolbar: tableToolSelector, width: 90}
                     ]
                 ],
                 parseData: function (res) {
@@ -125,82 +203,155 @@
             });
 
             // 监听搜索
-            form.on('submit(cms-book-list-table-search)', function (data) {
-                table.reload('book-list-table', {
+            form.on('submit(' + tableSearchId + ')', function (data) {
+                table.reload(tableId, {
                     where: data.field
                 });
             });
 
             // 头工具栏事件
-            table.on('toolbar(book-list-table)', function (obj) {
+            table.on('toolbar(' + tableId + ')', function (obj) {
                 eventExecute(eventExecutor, obj.event, table.checkStatus(obj.config.id).data);
             });
 
             // 右侧工具栏
-            table.on('tool(book-list-table)', function (obj) {
+            table.on('tool(' + tableId + ')', function (obj) {
                 eventExecute(eventExecutor, obj.event, obj.data);
             });
 
-            var eventExecutor = {};
+            $.ajax({
+                url: apis.listBookType.url,
+                type: apis.listBookType.type,
+                async: true,
+                success: function (res) {
+                    let map = new Map();
+                    res.data.forEach(bookType => {
+                        bookType.title = bookType.name;
+                        bookType.field = 'name';
+                        bookType.spread = true;
+                        bookType.children = [];
+                        map.set(bookType.id, bookType);
+                    })
+
+                    let bootTypes = [];
+                    map.forEach((bookType, id) => {
+                        if (bookType.parentId === 0) {
+                            bootTypes.push(bookType);
+                        } else {
+                            map.get(bookType.parentId).children.push(bookType);
+                        }
+                    })
+
+                    tree.render({
+                        elem: treeSelector,
+                        id: treeId,
+                        data: bootTypes,
+                        dblclick: function (node) {
+                            $("#type").val(node.data.id);
+                            $("#typeName").val(node.data.name);
+                            layer.close(layer.index);
+                        }
+                    });
+                }
+            });
+
+            $("#typeName").click(function () {
+                layer.open({
+                    type: 1,
+                    title: '双击选择图书类型',
+                    area: '300px;',
+                    content: $(treeSelector)
+                });
+            });
+
+            let eventExecutor = {};
             eventExecutor.addBook = function () {
                 layer.open({
-                    type: 2,
+                    type: 1,
                     title: '添加图书',
-                    content: pages.bookForm,
+                    content: $(formSelector),
                     area: ['500px', '450px'],
-                    btn: ['确定', '取消'],
-                    yes: function (index, layero) {
-                        var iframeWindow = window['layui-layer-iframe' + index],
-                            submitId = 'cms-book-form-submit',
-                            submit = layero.find('iframe').contents().find('#' + submitId);
-
-                        iframeWindow.layui.form.on('submit(' + submitId + ')', function (data) {
+                    btn: ['保存', '取消'],
+                    yes: function (index) {
+                        // 绑定提交事件
+                        layui.form.on("submit(" + formSubmitId + ")", function (event) {
+                            let api = apis.addBook;
                             $.ajax({
-                                url: apis.addBook.url,
-                                type: apis.addBook.type,
-                                data: data.field,
+                                url: api.url,
+                                type: api.type,
+                                data: event.field,
                                 async: false,
-                                successExecute: function (res) {
-                                    table.reload("book-list-table"); //数据刷新
-                                    layer.close(index); //关闭弹层
+                                successExecute: function () {
+                                    layer.close(index);
+                                    table.reload(tableId);
                                 }
                             });
                         });
-
-                        submit.trigger('click');
+                        // 触发表单提交
+                        $(formSubmitSelector).click();
+                    },
+                    end: function () {
+                        $(formSelector)[0].reset();
                     }
                 });
             }
-
-            eventExecutor.delBook = function (checkData) {
-                if (checkData.length === 0) {
+            eventExecutor.modBook = function (dataArray) {
+                if (dataArray.length !== 1) {
+                    return layer.msg("请选择一条数据");
+                }
+                let data = {...dataArray[0]};
+                form.val(formId, data);
+                layer.open({
+                    type: 1,
+                    title: '修改图书',
+                    area: ['500px', '450px'],
+                    content: $(formSelector),
+                    btn: ['保存', '取消'],
+                    yes: function (index) {
+                        layui.form.on("submit(" + formSubmitId + ")", function (data) {
+                            let api = apis.modBook;
+                            $.ajax({
+                                url: api.url,
+                                type: api.type,
+                                data: api.parseData(data.field),
+                                dataType: api.dataType,
+                                contentType: api.contentType,
+                                successExecute: function () {
+                                    layer.close(index);
+                                    table.reload(tableId);
+                                }
+                            });
+                        });
+                        $(formSubmitSelector).click();
+                    },
+                    end: function () {
+                        $(formSelector)[0].reset();
+                    }
+                });
+            }
+            eventExecutor.delBook = function (dataArray) {
+                if (dataArray.length === 0) {
                     return layer.msg('请选择数据');
                 }
 
-                layer.confirm(
-                    "确定删除吗？",
-                    function () {
-                        var ids = [];
+                layer.confirm("确定删除吗？", function () {
+                    let ids = [];
 
-                        checkData.forEach(data => {
-                            ids.push(data.id);
-                        })
+                    dataArray.forEach(data => ids.push(data.id));
 
-                        $.ajax({
-                            url: apis.delBook.url,
-                            type: apis.delBook.type,
-                            contentType: "application/json;charset=UTF-8",
-                            data: JSON.stringify(ids),
-                            dataType: "json",
-                            successExecute: function (res) {
-                                table.reload("book-list-table");
-                                layer.msg("删除成功");
-                            }
-                        });
-                    }
-                )
+                    $.ajax({
+                        url: apis.delBook.url,
+                        type: apis.delBook.type,
+                        contentType: "application/json;charset=UTF-8",
+                        data: JSON.stringify(ids),
+                        dataType: "json",
+                        successExecute: function () {
+                            layer.msg("删除成功");
+                            table.reload(tableId);
+                        }
+                    });
+                });
             }
-
             eventExecutor.lendBook = function (data) {
                 layer.confirm("是否借阅该图书", () => {
                     if (data.remaining < 1) {
@@ -215,7 +366,7 @@
                         },
                         successExecute: function (res) {
                             layer.msg("借阅成功，请联系管理员领取图书");
-                            table.reload("book-list-table");
+                            table.reload(tableId);
                         }
                     })
                 });

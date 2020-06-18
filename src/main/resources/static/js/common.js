@@ -97,6 +97,13 @@ var apis = {
         url: "/api/v1/book",
         type: "DELETE",
     },
+    modBook: {
+        url: "/api/v1/book",
+        type: "PUT",
+        contentType: "application/json;charset=UTF-8",
+        dataType: "json",
+        parseData: JSON.stringify
+    },
     bookList: {
         url: "/api/v1/book/list",
         type: "GET"
@@ -133,10 +140,6 @@ var apis = {
         type: "GET"
     },
 };
-
-var pages = {
-    bookForm: "/book/form"
-}
 
 
 function ajaxSetup(layui) {

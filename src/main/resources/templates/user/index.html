@@ -283,7 +283,6 @@
                 }
                 let data = {...dataArray[0]};
                 data.enabled = data.enabled.toString();
-                console.log(data);
                 form.val(formId, data);
                 layer.open({
                     type: 1,
@@ -318,7 +317,7 @@
                 }
 
                 layer.confirm("确定删除吗？", function () {
-                    var ids = [];
+                    let ids = [];
 
                     data.forEach(row => {
                         ids.push(row.id);

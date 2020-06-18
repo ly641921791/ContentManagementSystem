@@ -48,7 +48,8 @@ public class BookInfoApiController {
 
 	@PutMapping
 	@RequiresPermission
-	public ApiResponse<?> mod(BookInfo bookInfo) {
+	public ApiResponse<?> mod(@RequestBody BookInfo args) {
+		bookInfoService.updateById(args);
 		return ApiResponse.ok();
 	}
 

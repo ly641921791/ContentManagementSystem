@@ -13,11 +13,6 @@ public class BookInfoController {
 		return "/book/index";
 	}
 
-	@GetMapping("/form")
-	public String form() {
-		return "/book/form";
-	}
-
 	@GetMapping("/type")
 	public String type() {
 		return "/book/type";

@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>分类管理</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="/webjars/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="/layuiadmin/style/admin.css" media="all">
+</head>
+<body>
+
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md3">
+            <div id="cms-documentation-type-tree"></div>
+        </div>
+        <div class="layui-col-md9">
+            <script type="text/html" id="cms-documentation-type-table-toolbar">
+                <div class="layui-btn-container">
+                    <button class="layui-btn layui-btn-sm" lay-event="addDocumentationTypeSameLevel">新增同级分类</button>
+                    <button class="layui-btn layui-btn-sm" lay-event="addDocumentationTypeLowerLevel">新增下级分类</button>
+                    <button class="layui-btn layui-btn-sm" lay-event="modDocumentationType">修改当前分类</button>
+                    <button class="layui-btn layui-btn-sm" lay-event="delDocumentationType">删除当前分类</button>
+                </div>
+            </script>
+            <table id="cms-documentation-type-table" lay-filter="cms-documentation-type-table"></table>
+        </div>
+    </div>
+</div>
+
+<form class="layui-form" hidden id="cms-documentation-type-form" lay-filter="cms-documentation-type-form"
+      style="padding: 20px 40px 0 0;">
+    <div class="layui-form-item" hidden>
+        <label class="layui-form-label">ID</label>
+        <div class="layui-input-block">
+            <input type="text" name="id" placeholder="请输入ID" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">分类名称</label>
+        <div class="layui-input-block">
+            <input type="text" name="name" lay-verify="required" placeholder="请输入" autocomplete="off"
+                   class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">分类描述</label>
+        <div class="layui-input-block">
+            <input type="text" name="note" placeholder="请输入" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item" hidden>
+        <label class="layui-form-label">数据版本</label>
+        <div class="layui-input-block">
+            <input type="text" name="version" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+</form>
+
+<script src="/js/common.js"></script>
+<script src="/webjars/layui/layui.js"></script>
+<script>
+    layui.config({
+        dir: '/webjars/layui/', // layui.js 所在路径
+        base: '/layuiadmin/'    // 拓展模块所在目录
+    }).extend({
+        index: 'lib/index' //主入口模块
+    }).use(['tree', 'util', 'table'], function () {
+        let $ = layui.$,
+            layer = layui.layer;
+
+        let tree = layui.tree;
+        let treeId = "cms-documentation-type-tree", treeSelector = "#" + treeId;
+
+        let table = layui.table;
+        let tableId = "cms-documentation-type-table", tableSelector = "#" + tableId;
+        let tableToolbarId = tableId + "-toolbar", tableToolbarSelector = "#" + tableToolbarId;
+
+        let form = layui.form;
+        let formId = "cms-documentation-type-form", formSelector = "#" + formId;
+
+        ajaxSetup(layui);
+
+        renderTree();
+        renderTable();
+
+        function renderTree() {
+            $.ajax({
+                url: apis.listDocumentationType.url,
+                type: apis.listDocumentationType.type,
+                async: true,
+                successExecute: function (res) {
+                    let map = new Map();
+                    res.data.forEach(type => {
+                        type.title = type.name;
+                        type.field = 'name';
+                        type.spread = true;
+                        type.children = [];
+                        map.set(type.id, type);
+                    })
+
+                    let documentationTypes = [];
+                    map.forEach((type, _) => {
+                        if (type.parentId === 0) {
+                            documentationTypes.push(type);
+                        } else {
+                            map.operateIfPresent(type.parentId, parentType => parentType.children.push(type));
+                        }
+                    });
+
+                    tree.render({
+                        elem: treeSelector,
+                        id: treeId,
+                        data: documentationTypes,
+                        onlyIconControl: true,
+                        click: function (node) {
+                            renderTable(node.data);
+                        }
+                    });
+                }
+            })
+        }
+
+        /**
+         * renderTable()            初始化空表格
+         * renderTable(data)        初始化一行数据
+         * renderTable(dataArray)   初始化多行数据
+         */
+        function renderTable() {
+            let data = [];
+            if (arguments.length > 0) {
+                if (arguments[0] instanceof Array) {
+                    data = arguments[0];
+                } else {
+                    data.push(arguments[0]);
+                }
+            }
+            table.render({
+                elem: tableSelector,
+                cellMinWidth: 80,
+                defaultToolbar: [],
+                toolbar: tableToolbarSelector,
+                cols: [
+                    [
+                        {field: 'id', title: 'ID'},
+                        {field: 'name', title: '分类名称'},
+                        {field: 'note', title: '分类描述'},
+                        {field: 'parentId', title: '父节点名', hide: true}
+                    ]
+                ],
+                data: data,
+            });
+            table.on('toolbar(' + tableId + ')', function (obj) {
+                eventExecute(eventExecutor, obj.event, obj.data);
+            });
+        }
+
+        let eventExecutor = {};
+        eventExecutor.addDocumentationTypeSameLevel = function () {
+            let dataList = table.cache[tableId];
+            if (dataList.length === 0) {
+                return layer.msg('请选择数据');
+            }
+
+            layer.open({
+                type: 1,
+                title: '新增同级分类',
+                area: '300px;',
+                content: $(formSelector),
+                btn: ['保存', '取消'],
+                yes: function (index, _) {
+                    if (!form.doVerify(formId)) {
+                        return;
+                    }
+
+                    let data = form.val(formId);
+                    data.parentId = dataList[0].parentId;
+
+                    $.ajax({
+                        url: apis.addDocumentationType.url,
+                        type: apis.addDocumentationType.type,
+                        data: data,
+                        async: false,
+                        successExecute: function () {
+                            renderTree();
+                            layer.close(index);
+                        }
+                    })
+                },
+                end: function () {
+                    $(formSelector)[0].reset();
+                }
+            });
+        };
+        eventExecutor.addDocumentationTypeLowerLevel = function () {
+            let dataList = table.cache[tableId];
+            if (dataList.length === 0) {
+                return layer.msg('请选择数据');
+            }
+
+            layer.open({
+                type: 1,
+                title: '新增下级分类',
+                area: '300px;',
+                content: $(formSelector),
+                btn: ['保存', '取消'],
+                yes: function (index, _) {
+                    if (!form.doVerify(formId)) {
+                        return;
+                    }
+
+                    let data = form.val(formId);
+                    data.parentId = dataList[0].id;
+
+                    $.ajax({
+                        url: apis.addDocumentationType.url,
+                        type: apis.addDocumentationType.type,
+                        data: data,
+                        async: false,
+                        successExecute: function () {
+                            renderTree();
+                            layer.close(index);
+                        }
+                    })
+                },
+                end: function () {
+                    $(formSelector)[0].reset();
+                }
+            });
+        };
+        eventExecutor.modDocumentationType = function () {
+            let dataArray = table.cache[tableId];
+            if (dataArray.length === 0) {
+                return layer.msg('请选择数据');
+            }
+            let data = {...dataArray[0]};
+            form.val(formId, data);
+            layer.open({
+                type: 1,
+                title: '修改分类',
+                area: '300px;',
+                content: $(formSelector),
+                btn: ['保存', '取消'],
+                yes: function (index, _) {
+                    if (!form.doVerify(formId)) {
+                        return;
+                    }
+
+                    let data = form.val(formId);
+                    let api = apis.modDocumentationType;
+
+                    $.ajax({
+                        url: api.url,
+                        type: api.type,
+                        data: api.parseData(data),
+                        dataType: api.dataType,
+                        contentType: api.contentType,
+                        async: false,
+                        successExecute: function () {
+                            renderTree();
+                            renderTable();
+                            layer.close(index);
+                        }
+                    })
+                },
+                end: function () {
+                    $(formSelector)[0].reset();
+                }
+            });
+        };
+        eventExecutor.delDocumentationType = function () {
+            let dataList = table.cache[tableId];
+            if (dataList.length === 0) {
+                return layer.msg('请选择数据');
+            }
+
+            layer.confirm("确定删除吗？", function () {
+                let ids = [];
+
+                ids.push(dataList[0].id);
+
+                let api = apis.delDocumentationType;
+
+                $.ajax({
+                    url: api.url,
+                    type: api.type,
+                    contentType: api.contentType,
+                    data: api.parseData(ids),
+                    dataType: api.dataType,
+                    successExecute: function () {
+                        layer.msg("删除成功");
+                        renderTree();
+                    }
+                });
+            });
+        };
+    });
+</script>
+</body>
+</html>

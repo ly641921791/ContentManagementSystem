@@ -135,9 +135,60 @@ var apis = {
         url: "/api/v1/documentation",
         type: "POST",
     },
+    delDocumentation: {
+        url: "/api/v1/documentation",
+        type: "DELETE",
+        contentType: "application/json;charset=UTF-8",
+        dataType: "json",
+        parseData: JSON.stringify
+    },
+    modDocumentation: {
+        url: "/api/v1/documentation",
+        type: "PUT",
+        contentType: "application/json;charset=UTF-8",
+        dataType: "json",
+        parseData: JSON.stringify
+    },
     documentationList: {
         url: "/api/v1/documentation/list",
         type: "GET"
+    },
+    addDocumentationType: {
+        url: "/api/v1/documentation/type",
+        type: "POST"
+    },
+    delDocumentationType: {
+        url: "/api/v1/documentation/type",
+        type: "DELETE",
+        contentType: "application/json;charset=UTF-8",
+        dataType: "json",
+        parseData: JSON.stringify
+    },
+    modDocumentationType: {
+        url: "/api/v1/documentation/type",
+        type: "PUT",
+        contentType: "application/json;charset=UTF-8",
+        dataType: "json",
+        parseData: JSON.stringify
+    },
+    listDocumentationType: {
+        url: "/api/v1/documentation/type/list",
+        type: "GET",
+    },
+    lendDocumentation: {
+        url: "/api/v1/documentation/lend",
+        type: "POST",
+    },
+    modLendDocumentation: {
+        url: "/api/v1/documentation/lend",
+        type: "PUT",
+        contentType: "application/json;charset=UTF-8",
+        dataType: "json",
+        parseData: JSON.stringify
+    },
+    listDocumentationLend: {
+        url: "/api/v1/documentation/lend/list",
+        type: "GET",
     },
 };
 
@@ -158,7 +209,7 @@ function ajaxSetup(layui) {
                     content: res.message,
                     anim: 6,
                     end: function () {
-                        top.location.href = "/user/login";
+                        top.location.href = "/login";
                     },
                 });
             } else {
@@ -238,6 +289,18 @@ Array.prototype.equals = function (array) {
 // Hide method from for-in loops
 Object.defineProperty(Array.prototype, "equals", {enumerable: false});
 
+/**
+ * Map.prototype.operateIfPresent
+ */
+if (Map.prototype.operateIfPresent) {
+    console.warn("Overriding existing Map.prototype.operateIfPresent. Possible causes: New API defines the method, there's a framework conflict or you've got double inclusions in your code.");
+}
+Map.prototype.operateIfPresent = function (key, operate) {
+    let value = this.get(key);
+    if (value) {
+        operate(value);
+    }
+}
 
 /**
  * layui.tree 组件存在bug，返回的是父子节点嵌套结构

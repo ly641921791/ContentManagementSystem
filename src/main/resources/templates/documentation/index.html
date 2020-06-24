@@ -18,14 +18,10 @@
         <div class="layui-form layui-card-header layuiadmin-card-header-auto">
             <div class="layui-form-item">
                 <div class="layui-inline">
-                    <label class="layui-form-label">资料名称</label>
-                    <div class="layui-input-block">
-                        <input type="text" name="name" placeholder="请输入" autocomplete="off" class="layui-input">
-                    </div>
+                    <input type="text" name="name" placeholder="请输入资料名" autocomplete="off" class="layui-input">
                 </div>
                 <div class="layui-inline">
-                    <button class="layui-btn layuiadmin-btn-useradmin" lay-submit
-                            lay-filter="cms-documentation-table-search">
+                    <button class="layui-btn icon-btn" lay-submit lay-filter="cms-documentation-table-search">
                         <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
                     </button>
                 </div>
@@ -41,12 +37,17 @@
                 </div>
             </script>
             <table id="cms-documentation-table" lay-filter="cms-documentation-table"></table>
+
+            <script type="text/html" id="cms-documentation-table-tool" lay-filter="cms-documentation-table-tool">
+                <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="lendDocumentation">借阅</a>
+            </script>
         </div>
 
     </div>
 </div>
 
-<form class="layui-form" hidden id="cms-documentation-form" style="padding: 20px 40px 0 0;">
+<form class="layui-form" hidden id="cms-documentation-form" lay-filter="cms-documentation-form"
+      style="padding: 20px 40px 0 0;">
     <div class="layui-form-item layui-hide">
         <label class="layui-form-label">ID</label>
         <div class="layui-input-block">
@@ -62,32 +63,67 @@
         </div>
     </div>
     <div class="layui-form-item">
-        <label class="layui-form-label">书架号</label>
+        <label class="layui-form-label">ISBN</label>
         <div class="layui-input-block">
-            <input type="text" name="shelf" lay-verify="required" placeholder="请输入" autocomplete="off"
-                   class="layui-input">
+            <input type="text" name="isbn" autocomplete="off" class="layui-input">
         </div>
     </div>
     <div class="layui-form-item">
-        <label class="layui-form-label">总份数</label>
+        <label class="layui-form-label">出版社</label>
         <div class="layui-input-block">
-            <input type="text" name="total" lay-verify="number" placeholder="请输入" autocomplete="off"
-                   class="layui-input">
+            <input type="text" name="publisher" autocomplete="off" class="layui-input">
         </div>
     </div>
     <div class="layui-form-item">
-        <label class="layui-form-label">剩余份数</label>
+        <label class="layui-form-label">作者</label>
         <div class="layui-input-block">
-            <input type="text" name="remaining" lay-verify="number" placeholder="请输入" autocomplete="off"
-                   class="layui-input">
+            <input type="text" name="author" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">图书类型</label>
+        <div class="layui-input-block">
+            <input id="type" name="type" style="display: none;">
+            <input id="typeName" type="text" name="typeName" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">图书介绍</label>
+        <div class="layui-input-block">
+            <textarea name="introduction" autocomplete="off" class="layui-textarea"></textarea>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">书架</label>
+        <div class="layui-input-block">
+            <input type="text" name="shelf" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">总数</label>
+        <div class="layui-input-block">
+            <input type="text" name="total" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">剩余数量</label>
+        <div class="layui-input-block">
+            <input type="text" name="remaining" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item" hidden>
+        <label class="layui-form-label">数据版本</label>
+        <div class="layui-input-block">
+            <input type="text" name="version" autocomplete="off" class="layui-input">
         </div>
     </div>
     <div class="layui-form-item layui-hide">
-        <button class="layui-btn" id="cms-documentation-form-submit" lay-submit
-                lay-filter="cms-documentation-form-submit">提交
-        </button>
+        <input type="button" lay-submit lay-filter="cms-documentation-form-submit" id="cms-documentation-form-submit"
+               value="确认">
     </div>
 </form>
+
+<div id="cms-documentation-type-tree" hidden></div>
 
 <script src="/js/common.js"></script>
 <script src="/webjars/layui/layui.js"></script>
@@ -106,10 +142,19 @@
         })
 
         // 加载模块
-        .use(['index', 'table'], function () {
+        .use(['index', 'table', 'tree'], function () {
             var $ = layui.$
             var form = layui.form
             var table = layui.table;
+
+            let tableId = "cms-documentation-table", tableSelector = "#" + tableId;
+            let tableToolId = tableId + "-tool", tableToolSelector = "#" + tableToolId;
+
+            let formId = "cms-documentation-form", formSelector = "#" + formId;
+            let formSubmitId = formId + "-submit", formSubmitSelector = "#" + formSubmitId;
+
+            let tree = layui.tree;
+            let treeId = "cms-documentation-type-tree", treeSelector = "#" + treeId;
 
             ajaxSetup(layui);
 
@@ -119,16 +164,21 @@
                 url: apis.documentationList.url,
                 page: true,
                 cellMinWidth: 80,
+                defaultToolbar: [],
                 toolbar: '#cms-documentation-table-toolbar',
                 cols: [
                     [
                         {type: 'checkbox', fixed: 'left'},
                         {field: 'id', title: 'ID', sort: true, align: 'center'},
                         {field: 'name', title: '文档名'},
-                        {field: 'type', title: '类型'},
+                        {field: 'isbn', title: 'ISBN', hide: true},
+                        {field: 'author', title: '作者', hide: true},
+                        {field: 'type', title: '类型ID', hide: true},
+                        {field: 'typeName', title: '类型'},
                         {field: 'total', title: '总数'},
                         {field: 'remaining', title: '剩余'},
                         {field: 'shelf', title: '书架'},
+                        {fixed: 'right', title: '操作', toolbar: tableToolSelector, width: 90}
                     ]
                 ],
                 parseData: function (res) {
@@ -139,7 +189,9 @@
                         "data": res.data
                     }
                 },
-                text: "对不起，加载出现异常！"
+                text: {
+                    none: '暂无相关数据'
+                }
             });
 
             // 监听搜索
@@ -151,18 +203,60 @@
 
             // 头工具栏事件
             table.on('toolbar(cms-documentation-table)', function (obj) {
-                var method = eventExecutor[obj.event];
-                if (method instanceof Function) {
-                    method.call();
-                } else {
-                    layer.open({
-                        title: '暂不支持',
-                        content: '该功能暂不支持，请联系开发人员',
+                eventExecute(eventExecutor, obj.event, table.checkStatus(obj.config.id).data);
+            });
+
+            // 右侧工具栏
+            table.on('tool(' + tableId + ')', function (obj) {
+                eventExecute(eventExecutor, obj.event, obj.data);
+            });
+
+            $.ajax({
+                url: apis.listDocumentationType.url,
+                type: apis.listDocumentationType.type,
+                async: true,
+                success: function (res) {
+                    let map = new Map();
+                    res.data.forEach(documentationType => {
+                        documentationType.title = documentationType.name;
+                        documentationType.field = 'name';
+                        documentationType.spread = true;
+                        documentationType.children = [];
+                        map.set(documentationType.id, documentationType);
+                    })
+
+                    let documentationTypes = [];
+                    map.forEach((documentationType, id) => {
+                        if (documentationType.parentId === 0) {
+                            documentationTypes.push(documentationType);
+                        } else {
+                            map.get(documentationType.parentId).children.push(documentationType);
+                        }
+                    })
+
+                    tree.render({
+                        elem: treeSelector,
+                        id: treeId,
+                        data: documentationTypes,
+                        dblclick: function (node) {
+                            $("#type").val(node.data.id);
+                            $("#typeName").val(node.data.name);
+                            layer.close(layer.index);
+                        }
                     });
                 }
             });
 
-            var eventExecutor = {};
+            $("#typeName").click(function () {
+                layer.open({
+                    type: 1,
+                    title: '双击选择资料类型',
+                    area: '300px;',
+                    content: $(treeSelector)
+                });
+            });
+
+            let eventExecutor = {};
             eventExecutor.addDocumentation = function () {
                 layer.open({
                     type: 1,
@@ -188,6 +282,83 @@
                     end: function () {
                         $("#cms-documentation-form")[0].reset();
                     }
+                });
+            }
+            eventExecutor.modDocumentation = function (dataArray) {
+                if (dataArray.length !== 1) {
+                    return layer.msg("请选择一条数据");
+                }
+                let data = {...dataArray[0]};
+                form.val(formId, data);
+                layer.open({
+                    type: 1,
+                    title: '修改资料',
+                    area: ['500px', '450px'],
+                    content: $(formSelector),
+                    btn: ['保存', '取消'],
+                    yes: function (index) {
+                        layui.form.on("submit(" + formSubmitId + ")", function (data) {
+                            let api = apis.modDocumentation;
+                            $.ajax({
+                                url: api.url,
+                                type: api.type,
+                                data: api.parseData(data.field),
+                                dataType: api.dataType,
+                                contentType: api.contentType,
+                                successExecute: function () {
+                                    layer.close(index);
+                                    table.reload(tableId);
+                                }
+                            });
+                        });
+                        $(formSubmitSelector).click();
+                    },
+                    end: function () {
+                        $(formSelector)[0].reset();
+                    }
+                });
+            }
+            eventExecutor.delDocumentation = function (dataArray) {
+                if (dataArray.length === 0) {
+                    return layer.msg('请选择数据');
+                }
+
+                layer.confirm("确定删除吗？", function () {
+                    let ids = [];
+
+                    dataArray.forEach(data => ids.push(data.id));
+
+                    let api = apis.delDocumentation;
+                    $.ajax({
+                        url: api.url,
+                        type: api.type,
+                        data: api.parseData(data.field),
+                        dataType: api.dataType,
+                        contentType: api.contentType,
+                        successExecute: function () {
+                            layer.msg("删除成功");
+                            table.reload(tableId);
+                        }
+                    });
+                });
+            }
+            eventExecutor.lendDocumentation = function (data) {
+                layer.confirm("是否借阅该图书", () => {
+                    if (data.remaining < 1) {
+                        layer.msg("图书库存不足，借阅失败");
+                        return;
+                    }
+                    $.ajax({
+                        url: apis.lendDocumentation.url,
+                        type: apis.lendDocumentation.type,
+                        data: {
+                            documentationId: data.id,
+                        },
+                        successExecute: function (res) {
+                            layer.msg("借阅成功，请联系管理员领取图书");
+                            table.reload(tableId);
+                        }
+                    })
                 });
             }
         });

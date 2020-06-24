@@ -9,8 +9,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class DocumentController {
 
 	@GetMapping
-	public String list() {
+	public String index() {
 		return "/documentation/index";
+	}
+
+	@GetMapping("/type")
+	public String type() {
+		return "/documentation/type";
+	}
+
+	@GetMapping("/lend")
+	public String lend() {
+		return "/documentation/lend";
 	}
 
 }

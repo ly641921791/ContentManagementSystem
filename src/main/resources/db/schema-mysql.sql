@@ -118,7 +118,9 @@ VALUES (101, 1, '用户列表', '/user/list', '', 1),
        (103, 1, '图书列表', '/book', '', 2),
        (104, 1, '图书类型', '/book/type', '', 2),
        (105, 1, '借阅管理', '/book/lend', '', 2),
-       (106, 1, '资料列表', '/documentation', '', 3);
+       (106, 1, '资料列表', '/documentation', '', 3),
+       (107, 1, '资料类型', '/documentation/type', '', 3),
+       (108, 1, '借阅管理', '/documentation/lend', '', 3);
 
 INSERT INTO `system_permission` (id, type, name, url, icon, parent_id)
 VALUES (10101, 2, '查看用户列表', '{GET /api/v1/system/user/list}', '', 101),
@@ -146,7 +148,13 @@ VALUES (10101, 2, '查看用户列表', '{GET /api/v1/system/user/list}', '', 10
        (10602, 2, '新增资料', '{POST /api/v1/documentation}', '', 106),
        (10603, 2, '修改资料', '{PUT /api/v1/documentation}', '', 106),
        (10604, 2, '删除资料', '{DELETE /api/v1/documentation}', '', 106),
-       (10605, 2, '借阅资料', '{POST /api/v1/documentation/lend}', '', 106);
+       (10605, 2, '借阅资料', '{POST /api/v1/documentation/lend}', '', 106),
+       (10701, 2, '查看资料分类', '{GET /api/v1/documentation/type/list}', '', 107),
+       (10702, 2, '新增资料分类', '{POST /api/v1/documentation/type}', '', 107),
+       (10703, 2, '修改资料分类', '{PUT /api/v1/documentation/type}', '', 107),
+       (10704, 2, '删除资料列表', '{DELETE /api/v1/documentation/type}', '', 107),
+       (10801, 2, '查看借阅列表', '{GET /api/v1/documentation/lend/list}', '', 108),
+       (10802, 2, '借还操作', '{PUT /api/v1/documentation/lend}', '', 108);
 
 CREATE TABLE `system_role_permission`
 (
@@ -174,6 +182,8 @@ VALUES (1, 1),
        (1, 104),
        (1, 105),
        (1, 106),
+       (1, 107),
+       (1, 108),
        (1, 10101),
        (1, 10102),
        (1, 10103),
@@ -199,7 +209,13 @@ VALUES (1, 1),
        (1, 10602),
        (1, 10603),
        (1, 10604),
-       (1, 10605);
+       (1, 10605),
+       (1, 10701),
+       (1, 10702),
+       (1, 10703),
+       (1, 10704),
+       (1, 10801),
+       (1, 10802);
 
 CREATE TABLE book_info
 (
@@ -301,6 +317,51 @@ CREATE TABLE documentation
 INSERT INTO documentation (isbn, name, author, publisher, type, introduction, shelf, total, remaining)
 VALUES ('', '史记', '司马迁', '出版社', 0,
         '《史记》，二十四史之一，最初称为《太史公书》或《太史公记》、《太史记》，是西汉史学家司马迁撰写的纪传体史书，是中国历史上第一部纪传体通史，记载了上至上古传说中的黄帝时代，下至汉武帝太初四年间共3000多年的历史。',
-        '一号书架', 1, 1);
+        '一号书架', 3, 1);
 
+
+CREATE TABLE documentation_type
+(
+    id          BIGINT UNSIGNED  NOT NULL AUTO_INCREMENT,
+    name        VARCHAR(32)      NOT NULL,
+    note        VARCHAR(32)      NOT NULL DEFAULT '' COMMENT '描述',
+    parent_id   BIGINT UNSIGNED  NOT NULL DEFAULT 0,
+    version     INT UNSIGNED     NOT NULL DEFAULT 0,
+    is_deleted  TINYINT UNSIGNED NOT NULL DEFAULT 0,
+    create_id   BIGINT UNSIGNED  NOT NULL DEFAULT 0,
+    create_time TIMESTAMP        NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    update_id   BIGINT UNSIGNED  NOT NULL DEFAULT 0,
+    update_time TIMESTAMP        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (id)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4;
+
+
+INSERT INTO documentation_type (id, name, parent_id)
+VALUES (1, '所有分类', 0),
+       (2, '历史相关', 1);
+
+CREATE TABLE documentation_lend
+(
+    id               BIGINT UNSIGNED  NOT NULL AUTO_INCREMENT,
+    user_id          BIGINT UNSIGNED  NOT NULL,
+    documentation_id BIGINT UNSIGNED  NOT NULL,
+    lend_time        DATETIME         NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    return_time      DATETIME                  DEFAULT NULL,
+    state            TINYINT UNSIGNED NOT NULL DEFAULT 0,
+    version          INT UNSIGNED     NOT NULL DEFAULT 0,
+    is_deleted       TINYINT UNSIGNED NOT NULL DEFAULT 0,
+    create_id        BIGINT UNSIGNED  NOT NULL DEFAULT 0,
+    create_time      TIMESTAMP        NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    update_id        BIGINT UNSIGNED  NOT NULL DEFAULT 0,
+    update_time      TIMESTAMP        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (id)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4;
+
+
+INSERT INTO documentation_lend (user_id, documentation_id, lend_time, return_time, state)
+VALUES (1, 1, '2019-03-05 01:53:56', '2020-03-05 01:53:56', 0),
+       (1, 1, '2019-03-05 01:53:56', NULL, 1),
+       (1, 1, '2019-03-05 01:53:56', NULL, 2);
 

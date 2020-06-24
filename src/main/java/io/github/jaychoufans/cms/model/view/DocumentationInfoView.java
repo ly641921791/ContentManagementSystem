@@ -3,7 +3,7 @@ package io.github.jaychoufans.cms.model.view;
 import lombok.Data;
 
 @Data
-public class BookInfoView {
+public class DocumentationInfoView {
 
 	private Long id;
 

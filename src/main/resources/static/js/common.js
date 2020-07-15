@@ -112,6 +112,20 @@ var apis = {
         url: "/api/v1/book/type",
         type: "POST"
     },
+    delBookType: {
+        url: "/api/v1/book/type",
+        type: "DELETE",
+        contentType: "application/json;charset=UTF-8",
+        dataType: "json",
+        parseData: JSON.stringify
+    },
+    modBookType: {
+        url: "/api/v1/book/type",
+        type: "PUT",
+        contentType: "application/json;charset=UTF-8",
+        dataType: "json",
+        parseData: JSON.stringify
+    },
     listBookType: {
         url: "/api/v1/book/type/list",
         type: "GET",
@@ -231,6 +245,30 @@ function ajaxSetup(layui) {
         successExecute: function (res) {
         },
     })
+}
+
+function getSystemConfig(layui) {
+    let $ = layui.$;
+
+    let systemConfig = layui.sessionData("system");
+    if ($.isEmptyObject(systemConfig)) {
+        $.ajax({
+            url: apis.getSystemConfigMap.url,
+            type: apis.getSystemConfigMap.type,
+            async: false,
+            success: function (data) {
+                for (let prop in data.data) {
+                    layui.sessionData("system", {
+                        key: prop,
+                        value: data.data[prop]
+                    });
+                }
+            }
+        });
+
+        return layui.sessionData("system");
+    }
+    return systemConfig;
 }
 
 /**

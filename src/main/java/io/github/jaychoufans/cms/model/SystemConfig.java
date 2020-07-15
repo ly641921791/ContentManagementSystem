@@ -19,6 +19,8 @@ public class SystemConfig {
 
 	private String configValue;
 
+	private String configDesc;
+
 	@Version
 	private Integer version;
 

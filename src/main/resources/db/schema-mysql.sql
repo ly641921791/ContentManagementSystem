@@ -2,7 +2,8 @@ CREATE TABLE system_config
 (
     id           BIGINT UNSIGNED  NOT NULL AUTO_INCREMENT,
     config_key   VARCHAR(32)      NOT NULL,
-    config_value VARCHAR(64)      NOT NULL,
+    config_value VARCHAR(128)     NOT NULL,
+    config_desc  VARCHAR(64)      NOT NULL DEFAULT '',
     version      INT UNSIGNED     NOT NULL DEFAULT 0,
     is_deleted   TINYINT UNSIGNED NOT NULL DEFAULT 0,
     create_id    BIGINT UNSIGNED  NOT NULL DEFAULT 0,
@@ -15,11 +16,12 @@ CREATE TABLE system_config
   DEFAULT CHARSET = utf8mb4;
 
 
-INSERT INTO system_config (config_key, config_value)
-VALUES ('system_name', '内容管理系统'),
-       ('system_desc', '内容管理系统（Content Management System）'),
-       ('system_copyright', '© 2020 东京易冷'),
-       ('cms_sys_home_url', '/home');
+INSERT INTO system_config (config_key, config_value, config_desc)
+VALUES ('system_name', '内容管理系统', ''),
+       ('system_desc', '内容管理系统（Content Management System）', ''),
+       ('system_copyright', '© 2020 东京易冷', ''),
+       ('cms_sys_home_url', '/home', ''),
+       ('cms_visitor_status', '1', '启用 1 禁用 0');
 
 
 CREATE TABLE `system_user`
@@ -43,7 +45,8 @@ CREATE TABLE `system_user`
   DEFAULT CHARSET = utf8mb4;
 
 INSERT INTO `system_user` (id, username, true_name, email, phone, password)
-VALUES (1, 'admin', '超级管理员', '641921791@qq.com', '18720968614',
+VALUES (0, 'visitor', '游客', '', '', ''),
+       (1, 'admin', '超级管理员', '641921791@qq.com', '18720968614',
         'ba3253876aed6bc22d4a6ff53d8406c6ad864195ed144ab5c87621b6c233b548baeae6956df346ec8c17f5ea10f35ee3cbc514797ed7ddd3145464e2a0bab413');
 
 
@@ -64,7 +67,8 @@ CREATE TABLE `system_role`
 
 
 INSERT INTO `system_role` (id, name, is_default_role)
-VALUES (1, '超级管理员', 0),
+VALUES (0, '游客', 0),
+       (1, '超级管理员', 0),
        (2, '普通角色', 1);
 
 
@@ -86,7 +90,8 @@ CREATE TABLE `system_user_role`
 
 
 INSERT INTO `system_user_role` (user_id, role_id)
-VALUES (1, 1);
+VALUES (0, 0),
+       (1, 1);
 
 
 CREATE TABLE `system_permission`

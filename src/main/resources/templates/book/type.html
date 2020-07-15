@@ -31,7 +31,13 @@
     </div>
 </div>
 
-<form class="layui-form" hidden id="cms-book-type-form" style="padding: 20px 40px 0 0;">
+<form class="layui-form" hidden id="cms-book-type-form" lay-filter="cms-book-type-form" style="padding: 20px 40px 0 0;">
+    <div class="layui-form-item" hidden>
+        <label class="layui-form-label">ID</label>
+        <div class="layui-input-block">
+            <input type="text" name="id" placeholder="请输入ID" autocomplete="off" class="layui-input">
+        </div>
+    </div>
     <div class="layui-form-item">
         <label class="layui-form-label">分类名称</label>
         <div class="layui-input-block">
@@ -43,6 +49,12 @@
         <label class="layui-form-label">分类描述</label>
         <div class="layui-input-block">
             <input type="text" name="note" placeholder="请输入" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item" hidden>
+        <label class="layui-form-label">数据版本</label>
+        <div class="layui-input-block">
+            <input type="text" name="version" autocomplete="off" class="layui-input">
         </div>
     </div>
 </form>
@@ -61,6 +73,11 @@
             table = layui.table,
             layer = layui.layer,
             util = layui.util;
+
+        let tableId = "cms-book-type-table";
+
+        let form = layui.form;
+        let formId = "cms-book-type-form", formSelector = "#" + formId;
 
         ajaxSetup(layui);
 
@@ -87,7 +104,7 @@
                         if (bookType.parentId === 0) {
                             bootTypes.push(bookType);
                         } else {
-                            map.get(bookType.parentId).children.push(bookType);
+                            map.operateIfPresent(bookType.parentId, parentType => parentType.children.push(bookType));
                         }
                     })
 
@@ -95,6 +112,7 @@
                         elem: '#cms-book-type-tree',
                         id: 'cms-book-type-tree',
                         data: bootTypes,
+                        onlyIconControl: true,
                         click: function (node) {
                             renderTable(node.data);
                         }
@@ -128,11 +146,12 @@
                 data: data,
             });
             table.on('toolbar(cms-book-type-table)', function (obj) {
-                eval(obj.event + "()");
+                eventExecute(eventExecutor, obj.event, obj.data);
             });
         }
 
-        function addBookTypeSameLevel() {
+        let eventExecutor = {};
+        eventExecutor.addBookTypeSameLevel = function () {
             var dataList = table.cache["cms-book-type-table"];
             if (dataList.length === 0) {
                 return layer.msg('请选择数据');
@@ -145,15 +164,13 @@
                 id: 'addBookTypeSameLevelForm',
                 content: $("#cms-book-type-form"),
                 btn: ['保存', '取消'],
-                yes: function (index, layero) {
-                    var data = {
-                        parentId: dataList[0].parentId,
-                    };
+                yes: function (index, _) {
+                    if (!form.doVerify(formId)) {
+                        return;
+                    }
 
-                    var dataArray = layero.find('form').serializeArray();
-                    dataArray.forEach(e => {
-                        data[e.name] = e.value;
-                    })
+                    let data = form.val(formId);
+                    data.parentId = dataList[0].parentId;
 
                     $.ajax({
                         url: apis.addBookType.url,
@@ -170,28 +187,110 @@
                     $("#cms-book-type-form")[0].reset();
                 }
             });
-        }
+        };
+        eventExecutor.addBookTypeLowerLevel = function () {
+            let dataList = table.cache[tableId];
+            if (dataList.length === 0) {
+                return layer.msg('请选择数据');
+            }
 
-        function addBookTypeLowerLevel() {
             layer.open({
-                title: '暂不支持',
-                content: '该功能暂不支持',
-            });
-        }
+                type: 1,
+                title: '新增下级分类',
+                area: '300px;',
+                content: $(formSelector),
+                btn: ['保存', '取消'],
+                yes: function (index, _) {
+                    if (!form.doVerify(formId)) {
+                        return;
+                    }
 
-        function modBookType() {
-            layer.open({
-                title: '暂不支持',
-                content: '该功能暂不支持',
-            });
-        }
+                    let data = form.val(formId);
+                    data.parentId = dataList[0].id;
 
-        function delBookType() {
-            layer.open({
-                title: '暂不支持',
-                content: '该功能暂不支持',
+                    $.ajax({
+                        url: apis.addBookType.url,
+                        type: apis.addBookType.type,
+                        data: data,
+                        async: false,
+                        successExecute: function () {
+                            renderTree();
+                            layer.close(index);
+                        }
+                    })
+                },
+                end: function () {
+                    $(formSelector)[0].reset();
+                }
             });
-        }
+        };
+        eventExecutor.modBookType = function () {
+            let dataArray = table.cache[tableId];
+            if (dataArray.length === 0) {
+                return layer.msg('请选择数据');
+            }
+            let data = {...dataArray[0]};
+            form.val(formId, data);
+            layer.open({
+                type: 1,
+                title: '修改分类',
+                area: '300px;',
+                content: $(formSelector),
+                btn: ['保存', '取消'],
+                yes: function (index, _) {
+                    if (!form.doVerify(formId)) {
+                        return;
+                    }
+
+                    let data = form.val(formId);
+                    let api = apis.modBookType;
+
+                    $.ajax({
+                        url: api.url,
+                        type: api.type,
+                        data: api.parseData(data),
+                        dataType: api.dataType,
+                        contentType: api.contentType,
+                        async: false,
+                        successExecute: function () {
+                            renderTree();
+                            renderTable();
+                            layer.close(index);
+                        }
+                    })
+                },
+                end: function () {
+                    $(formSelector)[0].reset();
+                }
+            });
+        };
+        eventExecutor.delBookType = function () {
+            let dataList = table.cache[tableId];
+            if (dataList.length === 0) {
+                return layer.msg('请选择数据');
+            }
+
+            layer.confirm("确定删除吗？", function () {
+                let ids = [];
+
+                ids.push(dataList[0].id);
+
+                let api = apis.delBookType;
+
+                $.ajax({
+                    url: api.url,
+                    type: api.type,
+                    contentType: api.contentType,
+                    data: api.parseData(ids),
+                    dataType: api.dataType,
+                    successExecute: function () {
+                        layer.msg("删除成功");
+                        renderTree();
+                        renderTable();
+                    }
+                });
+            });
+        };
 
     });
 </script>

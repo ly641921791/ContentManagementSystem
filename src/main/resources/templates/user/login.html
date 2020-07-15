@@ -36,7 +36,8 @@
             <div class="layui-form-item" style="margin-bottom: 20px;">
                 <a href="forget.html" class="layadmin-user-jump-change layadmin-link"
                    style="margin-top: 7px;float: left">忘记密码？</a>
-                <a href="/register" class="layadmin-user-jump-change layadmin-link" style="margin-top: 7px;float: right">注册帐号</a>
+                <a href="/register" class="layadmin-user-jump-change layadmin-link"
+                   style="margin-top: 7px;float: right">注册帐号</a>
             </div>
             <div class="layui-form-item">
                 <button class="layui-btn layui-btn-fluid" lay-submit lay-filter="LAY-user-login-submit">登 入</button>
@@ -79,23 +80,11 @@
 
             form.render();
 
-            // 获取并存储全局配置参数，根据配置设置页面
-            $.ajax({
-                url: apis.getSystemConfigMap.url,
-                type: apis.getSystemConfigMap.type,
-                async: false,
-                success: function (data) {
-                    for (var prop in data.data) {
-                        layui.data("system", {
-                            key: prop,
-                            value: data.data[prop]
-                        })
-                    }
-                    $("#system-name").html(layui.data("system")["system_name"]);
-                    $("#system-desc").html(layui.data("system")["system_desc"]);
-                    $("#system-copyright").html(layui.data("system")["system_copyright"]);
-                }
-            });
+            let systemConfig = getSystemConfig(layui);
+            $("#system-name").html(systemConfig["system_name"]);
+            $("#system-desc").html(systemConfig["system_desc"]);
+            $("#system-copyright").html(systemConfig["system_copyright"]);
+
 
             //提交
             form.on('submit(LAY-user-login-submit)', function (obj) {

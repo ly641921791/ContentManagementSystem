@@ -70,6 +70,7 @@
                         <dd><a lay-href="set/user/info.html">基本资料</a></dd>
                         <dd><a lay-href="set/user/password.html">修改密码</a></dd>
                         <hr>
+                        <dd><a href="/login">登入</a></dd>
                         <dd><a href="/logout">退出</a></dd>
                     </dl>
                 </li>
@@ -154,10 +155,11 @@
         .use(['index', 'user', 'element'], function () {
             var $ = layui.$
             var element = layui.element;
-            $("#system-name").html(layui.data("system")["system_name"]);
-            $("#cms-system-title").html(layui.data("system")["system_name"]);
+            let systemConfig = getSystemConfig(layui);
+            $("#system-name").html(systemConfig["system_name"]);
+            $("#cms-system-title").html(systemConfig["system_name"]);
 
-            document.getElementById("cms-sys-home").src = layui.data("system")["cms_sys_home_url"];
+            document.getElementById("cms-sys-home").src = systemConfig["cms_sys_home_url"];
 
             $.ajax({
                 url: apis.userMenu.url,

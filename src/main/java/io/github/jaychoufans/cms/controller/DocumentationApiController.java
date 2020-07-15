@@ -71,7 +71,7 @@ public class DocumentationApiController {
 	@RequiresPermission
 	@DeleteMapping("/type")
 	public ApiResponse<?> delType(@RequestBody List<Long> ids) {
-		ids.forEach(id -> documentationTypeService.removeById(id));
+		documentationTypeService.removeTreeByRootIds(ids);
 		return ApiResponse.ok();
 	}
 

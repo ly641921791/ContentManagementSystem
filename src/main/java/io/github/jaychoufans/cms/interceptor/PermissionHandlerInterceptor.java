@@ -1,9 +1,12 @@
 package io.github.jaychoufans.cms.interceptor;
 
 import io.github.jaychoufans.cms.annotation.RequiresPermission;
+import io.github.jaychoufans.cms.common.Const;
 import io.github.jaychoufans.cms.exception.CmsException;
+import io.github.jaychoufans.cms.model.SystemConfig;
 import io.github.jaychoufans.cms.model.SystemPermission;
 import io.github.jaychoufans.cms.model.SystemUser;
+import io.github.jaychoufans.cms.service.SystemConfigService;
 import io.github.jaychoufans.cms.service.SystemUserService;
 import io.github.jaychoufans.cms.utils.WebUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +38,9 @@ public class PermissionHandlerInterceptor
 	@Resource
 	private SystemUserService systemUserService;
 
+	@Resource
+	private SystemConfigService systemConfigService;
+
 	@Override
 	public void onApplicationEvent(WebServerInitializedEvent webServerInitializedEvent) {
 		permissionMap = new HashMap<>();
@@ -58,7 +64,14 @@ public class PermissionHandlerInterceptor
 		if (method.isAnnotationPresent(RequiresPermission.class)) {
 			SystemUser user = WebUtils.getCurrentUser();
 			if (user == null) {
-				throw new CmsException("A0230", "用户登陆已过期");
+				SystemConfig visitorStatus = systemConfigService.getByKey(Const.visitorStatus);
+				// 支持游客功能
+				if (visitorStatus != null && Const.visitorStatusEnable.equals(visitorStatus.getConfigValue())) {
+					WebUtils.setCurrentUser(systemUserService.getById(0));
+				}
+				else {
+					throw new CmsException("A0230", "用户登陆已过期");
+				}
 			}
 
 			// 获得 requestMapping 当前的请求地址，查询是否包含在该用户的权限列表中
@@ -66,7 +79,12 @@ public class PermissionHandlerInterceptor
 			Set<String> permissionCodes = systemUserService.getPermissionById(user.getId()).stream()
 					.map(SystemPermission::getUrl).collect(Collectors.toSet());
 			if (!permissionCodes.contains(permissionCode)) {
-				throw new CmsException("A0312", "无权限使用 API");
+				if (Const.visitorUserId.equals(user.getId())) {
+					throw new CmsException("A0312", "游客无权限使用该 API ，选择右上角当前用户，点击登入按钮，进入登录页面登录后再次访问");
+				}
+				else {
+					throw new CmsException("A0312", "无权限使用 API");
+				}
 			}
 
 		}

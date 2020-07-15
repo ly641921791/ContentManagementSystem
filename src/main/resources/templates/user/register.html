@@ -74,9 +74,10 @@
 
         ajaxSetup(layui);
 
-        $("#system-name").html(layui.data("system")["system_name"]);
-        $("#system-desc").html(layui.data("system")["system_desc"]);
-        $("#system-copyright").html(layui.data("system")["system_copyright"]);
+        let systemConfig = getSystemConfig(layui);
+        $("#system-name").html(systemConfig["system_name"]);
+        $("#system-desc").html(systemConfig["system_desc"]);
+        $("#system-copyright").html(systemConfig["system_copyright"]);
 
         form.render();
 

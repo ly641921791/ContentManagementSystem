@@ -82,6 +82,20 @@ public class BookInfoApiController {
 		return ApiResponse.ok();
 	}
 
+	@RequiresPermission
+	@DeleteMapping("/type")
+	public ApiResponse<?> delType(@RequestBody List<Long> ids) {
+		ids.forEach(id -> bookTypeService.removeById(id));
+		return ApiResponse.ok();
+	}
+
+	@RequiresPermission
+	@PutMapping("/type")
+	public ApiResponse<?> modType(@RequestBody BookType args) {
+		bookTypeService.updateById(args);
+		return ApiResponse.ok();
+	}
+
 	@GetMapping("/type/list")
 	public ApiResponse<?> typeList() {
 		return ApiResponse.ok(bookTypeService.list());

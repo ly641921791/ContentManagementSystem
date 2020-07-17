@@ -7,3 +7,14 @@ spring:
     url: jdbc:mysql://127.0.0.1:3306/cms?useUnicode=true&characterEncoding=UTF-8&useSSL=false
     username: root
     password: 123456
+  jackson:
+    serialization:
+      write-dates-as-timestamps: true
+  thymeleaf:
+    prefix: classpath:/templates
+mybatis-plus:
+  global-config:
+    db-config:
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0

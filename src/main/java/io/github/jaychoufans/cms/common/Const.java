@@ -20,4 +20,14 @@ public class Const {
 	 */
 	public static final String visitorStatusEnable = "1";
 
+	/**
+	 * 默认查询页码
+	 */
+	public static final String QUERY_PAGE_STRING = "1";
+
+	/**
+	 * 默认查询记录数
+	 */
+	public static final String QUERY_LIMIT_STRING = "10";
+
 }

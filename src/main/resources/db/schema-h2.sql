@@ -236,8 +236,10 @@ CREATE TABLE book_info
 
 
 INSERT INTO book_info (isbn, name, author, publisher, type, introduction, shelf, total, remaining)
-VALUES ('', '资治通鉴', '司马光', '出版社', 2, '《资治通鉴》的内容以政治、军事和民族关系为主，兼及经济、文化和历史人物评价，目的是通过对事关国家盛衰、民族兴亡的统治阶级政策的描述警示后人。', '一号书架',
-        3, 1);
+VALUES ('978-7-1010-6716-3', '资治通鉴', '（宋）司马光', '中华书局', 1,
+        '《资治通鉴》的内容以政治、军事和民族关系为主，兼及经济、文化和历史人物评价，目的是通过对事关国家盛衰、民族兴亡的统治阶级政策的描述警示后人。', '一号书架',
+        3, 1),
+       ('978-7-5354-9723-9', '钢铁是怎样炼成的', '【前苏联】尼古拉·奥斯特洛夫斯基', '长江文艺出版社', 2, '', '二号书架', 1, 1);
 
 
 CREATE TABLE book_type
@@ -258,7 +260,7 @@ CREATE TABLE book_type
 
 INSERT INTO book_type (id, name, parent_id)
 VALUES (1, '所有分类', 0),
-       (2, '电脑相关', 1);
+       (2, '长篇小说', 1);
 
 
 CREATE TABLE book_lend

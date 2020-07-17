@@ -12,11 +12,20 @@ import java.util.Date;
 @Data
 public class BookInfo {
 
+	/**
+	 * 数据库字段：书名
+	 */
+	public static final String NAME = "name";
+
 	@TableId(type = IdType.AUTO)
 	private Long id;
 
 	private String isbn;
 
+	/**
+	 * 书名
+	 */
+	@TableField(NAME)
 	private String name;
 
 	private String author;

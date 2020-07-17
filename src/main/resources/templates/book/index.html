@@ -172,21 +172,20 @@
                 url: apis.bookList.url,
                 page: true,
                 toolbar: tableToolbarSelector,
-                cellMinWidth: 80,
                 defaultToolbar: [],
                 cols: [
                     [
                         {type: 'checkbox', fixed: 'left'},
-                        {field: 'id', title: 'ID', sort: true, align: 'center'},
-                        {field: 'name', title: '书名'},
-                        {field: 'isbn', title: 'ISBN'},
-                        {field: 'author', title: '作者'},
+                        {field: 'id', title: 'ID', align: 'center', hide: true},
+                        {field: 'isbn', title: 'ISBN', align: 'center', width: 150},
+                        {field: 'name', title: '书名', width: 145},
+                        {field: 'author', title: '作者', width: 245},
                         {field: 'type', title: '类型ID', hide: true},
-                        {field: 'typeName', title: '类型'},
-                        {field: 'total', title: '总数'},
-                        {field: 'remaining', title: '剩余'},
-                        {field: 'shelf', title: '书架'},
-                        {fixed: 'right', title: '操作', toolbar: tableToolSelector, width: 90}
+                        {field: 'typeName', title: '类型', width: 90},
+                        {field: 'total', title: '总数', align: 'center', width: 60},
+                        {field: 'remaining', title: '剩余', align: 'center', width: 60},
+                        {field: 'shelf', title: '书架', width: 90},
+                        {fixed: 'right', title: '操作', toolbar: tableToolSelector, width: 70}
                     ]
                 ],
                 parseData: function (res) {
